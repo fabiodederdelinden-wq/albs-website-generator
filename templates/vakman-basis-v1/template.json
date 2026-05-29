@@ -1,0 +1,27 @@
+{
+  "id": "vakman-basis-v1",
+  "name": "Vakman Basis v1",
+  "description": "Eerste ALBS-template. Geschikt voor 5 hoofd-niches via variants A-E.",
+  "version": "0.1.0",
+  "variants": ["A-direct", "B-craftsmanship", "C-design", "D-simple", "E-local"],
+  "default_variant": "B-craftsmanship",
+  "placeholders": [
+    "BUSINESS_NAME",
+    "BUSINESS_TAGLINE",
+    "BUSINESS_PHONE",
+    "BUSINESS_WHATSAPP",
+    "BUSINESS_EMAIL",
+    "BUSINESS_ADDRESS",
+    "BUSINESS_CITY",
+    "BUSINESS_POSTCODE",
+    "BUSINESS_KVK",
+    "PRIMARY_COLOR",
+    "ACCENT_COLOR",
+    "SERVICES",
+    "REVIEW_COUNT",
+    "REVIEW_RATING",
+    "DEKKING_REGIO"
+  ],
+  "must_have_sections": ["hero", "diensten", "trust-block", "contact"],
+  "optional_sections": ["portfolio", "reviews", "faq", "process", "before-after"]
+}

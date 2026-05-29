@@ -1,0 +1,583 @@
+{
+  "version": 1,
+  "lastUpdated": "2026-05-19T07:47:00.972Z",
+  "note": "Approver-state per sectie x variant. Hero + intro + layout staan in variants-manifest.json (al goedgekeurd in showcase).",
+  "sections": {
+    "header": {
+      "1": {
+        "name": "minimal-flat",
+        "label": "Minimal Flat",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:24:24.227Z"
+      },
+      "2": {
+        "name": "sticky-blur",
+        "label": "Sticky Blur",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:24:27.081Z"
+      },
+      "3": {
+        "name": "transparent-over",
+        "label": "Transparent Overlay",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:24:29.823Z"
+      },
+      "4": {
+        "name": "side-tabs",
+        "label": "Side Tabs",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:26:41.336Z"
+      },
+      "5": {
+        "name": "drawer-mobile",
+        "label": "Drawer Mobile",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:25:52.543Z"
+      },
+      "6": {
+        "name": "mega-menu",
+        "label": "Mega Menu",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:25:55.123Z"
+      },
+      "7": {
+        "name": "cta-prominent",
+        "label": "CTA Prominent",
+        "status": "approved",
+        "feedback": "te groot met de nummer erin.",
+        "decidedAt": "2026-05-19T07:27:05.673Z"
+      },
+      "8": {
+        "name": "top-bar-info",
+        "label": "Top-Bar Info",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:26:21.139Z"
+      },
+      "9": {
+        "name": "double-row",
+        "label": "Double Row",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:26:30.776Z"
+      },
+      "10": {
+        "name": "logo-center",
+        "label": "Logo Centered",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:26:34.780Z"
+      }
+    },
+    "services": {
+      "1": {
+        "name": "icon-grid",
+        "label": "Icon Grid",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:27:22.307Z"
+      },
+      "2": {
+        "name": "accordion",
+        "label": "Accordion",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:27:25.100Z"
+      },
+      "3": {
+        "name": "tabs",
+        "label": "Tabs",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:27:33.002Z"
+      },
+      "4": {
+        "name": "cards-hover",
+        "label": "Cards Hover",
+        "status": "approved",
+        "feedback": "gaat dit op telefoon wel goed?",
+        "decidedAt": "2026-05-19T07:28:01.184Z"
+      },
+      "5": {
+        "name": "list-with-photo",
+        "label": "List With Photo",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:28:08.859Z"
+      },
+      "6": {
+        "name": "steps-numbered",
+        "label": "Steps Numbered",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:28:22.430Z"
+      },
+      "7": {
+        "name": "price-indicative",
+        "label": "Price Indicative",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:28:42.030Z"
+      },
+      "8": {
+        "name": "before-after",
+        "label": "Before-After Pair",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:28:48.954Z"
+      },
+      "9": {
+        "name": "flip-cards",
+        "label": "Flip Cards",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:28:58.253Z"
+      },
+      "10": {
+        "name": "masonry",
+        "label": "Masonry",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:29:07.759Z"
+      }
+    },
+    "projects": {
+      "1": {
+        "name": "grid-three",
+        "label": "Grid 3-col",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:35:49.020Z"
+      },
+      "2": {
+        "name": "masonry",
+        "label": "Masonry",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:35:52.391Z"
+      },
+      "3": {
+        "name": "carousel",
+        "label": "Carousel",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:36:00.100Z"
+      },
+      "4": {
+        "name": "lightbox-grid",
+        "label": "Lightbox Grid",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:36:04.715Z"
+      },
+      "5": {
+        "name": "before-after-sl",
+        "label": "Before-After Slider",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:36:20.631Z"
+      },
+      "6": {
+        "name": "polaroid-stack",
+        "label": "Polaroid Stack",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:36:30.682Z"
+      },
+      "7": {
+        "name": "fullbleed-tiles",
+        "label": "Fullbleed Tiles",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:36:34.369Z"
+      },
+      "8": {
+        "name": "video-thumbnails",
+        "label": "Video Thumbnails",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:36:38.149Z"
+      },
+      "9": {
+        "name": "timeline-cards",
+        "label": "Timeline Cards",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:36:56.896Z"
+      },
+      "10": {
+        "name": "stack-rotating",
+        "label": "Stack Rotating",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:37:04.464Z"
+      }
+    },
+    "reviews": {
+      "1": {
+        "name": "carousel",
+        "label": "Carousel",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:37:21.350Z"
+      },
+      "2": {
+        "name": "masonry",
+        "label": "Masonry",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:41:48.818Z"
+      },
+      "3": {
+        "name": "spotlight",
+        "label": "Spotlight",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:37:27.578Z"
+      },
+      "4": {
+        "name": "video-quote",
+        "label": "Video Quote",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:37:32.196Z"
+      },
+      "5": {
+        "name": "with-source",
+        "label": "With Source Badge",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:37:35.904Z"
+      },
+      "6": {
+        "name": "marquee-ticker",
+        "label": "Marquee Ticker",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:37:38.813Z"
+      },
+      "7": {
+        "name": "star-grid",
+        "label": "Star Grid",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:41:32.527Z"
+      },
+      "8": {
+        "name": "embed-google",
+        "label": "Embed Google-style",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:41:38.619Z"
+      },
+      "9": {
+        "name": "side-stars",
+        "label": "Side-by-Side Stars",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:41:54.796Z"
+      },
+      "10": {
+        "name": "quote-fullbleed",
+        "label": "Quote Fullbleed",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:42:01.548Z"
+      }
+    },
+    "trust": {
+      "1": {
+        "name": "badge-row",
+        "label": "Badge Row",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:42:14.735Z"
+      },
+      "2": {
+        "name": "stats-counter",
+        "label": "Stats Counter",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:42:18.256Z"
+      },
+      "3": {
+        "name": "certificate-grid",
+        "label": "Certificate Grid",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:42:24.401Z"
+      },
+      "4": {
+        "name": "kvk-prominent",
+        "label": "KvK Prominent",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:42:49.620Z"
+      },
+      "5": {
+        "name": "guarantee-banner",
+        "label": "Guarantee Banner",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:43:12.309Z"
+      },
+      "6": {
+        "name": "side-by-side",
+        "label": "Side-by-Side",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:43:03.898Z"
+      },
+      "7": {
+        "name": "ticker-bar",
+        "label": "Ticker Bar",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:43:15.919Z"
+      },
+      "8": {
+        "name": "badges-grid-lg",
+        "label": "Badges Grid Large",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:43:18.865Z"
+      },
+      "9": {
+        "name": "awards-list",
+        "label": "Awards List",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:43:27.737Z"
+      },
+      "10": {
+        "name": "single-stat-lg",
+        "label": "Single Stat Large",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:43:30.094Z"
+      }
+    },
+    "owner": {
+      "1": {
+        "name": "split",
+        "label": "Split",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:44:03.364Z"
+      },
+      "2": {
+        "name": "fullbleed",
+        "label": "Fullbleed Photo",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:43:54.198Z"
+      },
+      "3": {
+        "name": "team-grid",
+        "label": "Team Grid",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:44:04.210Z"
+      },
+      "4": {
+        "name": "quote-card",
+        "label": "Quote Card",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:44:02.073Z"
+      },
+      "5": {
+        "name": "story-paragraph",
+        "label": "Story Paragraph",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:44:09.460Z"
+      },
+      "6": {
+        "name": "photo-badges",
+        "label": "Photo + Badges",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:44:11.059Z"
+      },
+      "7": {
+        "name": "polaroid",
+        "label": "Polaroid",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:44:38.428Z"
+      },
+      "8": {
+        "name": "side-by-side",
+        "label": "Side-by-Side",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:44:36.881Z"
+      },
+      "9": {
+        "name": "video-thumb",
+        "label": "Video Thumbnail",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:44:15.963Z"
+      },
+      "10": {
+        "name": "signature-card",
+        "label": "Signature Card",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:44:43.446Z"
+      }
+    },
+    "contact": {
+      "1": {
+        "name": "form-classic",
+        "label": "Form Classic",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:45:00.397Z"
+      },
+      "2": {
+        "name": "side-info-form",
+        "label": "Side Info + Form",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:44:58.429Z"
+      },
+      "3": {
+        "name": "map-info-side",
+        "label": "Map + Info Side",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:44:49.614Z"
+      },
+      "4": {
+        "name": "sticky-cta-bar",
+        "label": "Sticky CTA Bar",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:45:03.883Z"
+      },
+      "5": {
+        "name": "calendly-embed",
+        "label": "Calendly Embed",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:45:12.421Z"
+      },
+      "6": {
+        "name": "whatsapp-prom",
+        "label": "WhatsApp Prominent",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:45:16.065Z"
+      },
+      "7": {
+        "name": "three-paths",
+        "label": "Three Paths",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:45:24.383Z"
+      },
+      "8": {
+        "name": "postcode-check",
+        "label": "Postcode Checker",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:45:33.081Z"
+      },
+      "9": {
+        "name": "accordion-faq",
+        "label": "Accordion FAQ",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:45:39.813Z"
+      },
+      "10": {
+        "name": "hero-cta-section",
+        "label": "Hero-CTA Section",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:45:43.711Z"
+      }
+    },
+    "footer": {
+      "1": {
+        "name": "minimal-one-col",
+        "label": "Minimal One-Col",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:45:59.747Z"
+      },
+      "2": {
+        "name": "four-col-classic",
+        "label": "Four-Col Classic",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:46:03.102Z"
+      },
+      "3": {
+        "name": "with-map",
+        "label": "With Map",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:46:10.466Z"
+      },
+      "4": {
+        "name": "with-newsletter",
+        "label": "With Newsletter",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:46:42.526Z"
+      },
+      "5": {
+        "name": "with-social-large",
+        "label": "With Social Large",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:46:37.807Z"
+      },
+      "6": {
+        "name": "big-cta-stack",
+        "label": "Big CTA Stack",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:46:45.640Z"
+      },
+      "7": {
+        "name": "sitemap-extended",
+        "label": "Sitemap Extended",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:46:58.358Z"
+      },
+      "8": {
+        "name": "kvk-prominent",
+        "label": "KvK Prominent",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:46:54.161Z"
+      },
+      "9": {
+        "name": "partner-logos",
+        "label": "Partner Logos",
+        "status": "approved",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:46:51.979Z"
+      },
+      "10": {
+        "name": "signature-hand",
+        "label": "Signature Handwritten",
+        "status": "rejected",
+        "feedback": null,
+        "decidedAt": "2026-05-19T07:47:00.972Z"
+      }
+    }
+  }
+}

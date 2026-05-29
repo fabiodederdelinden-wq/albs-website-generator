@@ -1,0 +1,31 @@
+{
+  "version": "v4",
+  "lastUpdated": "2026-05-17",
+  "hero": {
+    "approved": [
+      { "id": 1, "name": "aurora-flow", "label": "Aurora Flow" },
+      { "id": 2, "name": "radial-pulse", "label": "Radial Pulse" },
+      { "id": 3, "name": "particle-drift", "label": "Particle Drift" },
+      { "id": 4, "name": "wave-sea", "label": "Wave Sea" },
+      { "id": 5, "name": "grid-morph", "label": "3D Grid Morph" },
+      { "id": 6, "name": "blob-morph", "label": "Blob Morph" },
+      { "id": 7, "name": "liquid-mesh", "label": "Liquid Mesh Light" },
+      { "id": 8, "name": "iso-floating", "label": "Iso Floating Tools (niche-aware)" },
+      { "id": 9, "name": "aurora-cycle", "label": "Aurora Cycle" },
+      { "id": 10, "name": "diagonal-streaks", "label": "Diagonal Streaks" }
+    ],
+    "note": "Bron in apps/templates-showcase/app/hero — wijzig deze lijst om subset te selecteren"
+  },
+  "intro": {
+    "approved": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  },
+  "reviews": {
+    "approved": [1, 2, 3]
+  },
+  "owner": {
+    "approved": [1, 2, 3]
+  },
+  "layout": {
+    "approved": ["A", "B", "C", "D"]
+  }
+}
