@@ -1,6 +1,10 @@
 import { BadgeIcon, formatKvk, type BadgeIconProps, type TrustProps } from './types'
 
 export default function TrustV8BadgesGridLg(p: TrustProps) {
+  const metaLine = [formatKvk(p.kvk), `${p.reviewRating.toFixed(1)}★ op ${p.reviewCount} reviews`]
+    .filter(Boolean)
+    .join(' · ')
+
   const certs: Array<{ kind: BadgeIconProps['kind']; label: string; tagline: string }> = [
     { kind: 'vca', label: 'VCA*', tagline: 'Veilig werken op locatie' },
     { kind: 'kiwa', label: 'KIWA', tagline: 'Erkend voor installaties' },
@@ -49,7 +53,7 @@ export default function TrustV8BadgesGridLg(p: TrustProps) {
         </div>
 
         <p className="mt-12 text-center text-xs font-mono tracking-wider uppercase text-[var(--color-ink-500)]">
-          {formatKvk(p.kvk)} · {p.reviewRating.toFixed(1)}★ op {p.reviewCount} reviews
+          {metaLine}
         </p>
       </div>
     </section>

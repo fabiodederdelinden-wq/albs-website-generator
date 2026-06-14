@@ -72,6 +72,8 @@ const PERSONAL_EMAIL_DOMAINS = new Set([
 const KVK_RE = /\b(?:KvK|K\.v\.K\.?|Kamer\s*van\s*Koophandel|KVK)[\s:\-\.\,]*?(\d{8})\b/i
 const KVK_RE_FALLBACK = /\b(?:KvK|KVK)\b[\s\S]{0,80}?(\d{8})/i
 const EMAIL_RE = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi
+// BTW-id: NL + 9 cijfers + B + 2 cijfers, evt. met spaties/punten ertussen (footer-notaties).
+const BTW_RE = /\bNL\s?\.?\s?(\d{3})\s?\.?\s?(\d{3})\s?\.?\s?(\d{3})\s?\.?\s?B\s?\.?\s?(\d{2})\b/i
 
 async function fetchHtml(url, timeoutMs = 10000) {
   const ctrl = new AbortController()
@@ -120,11 +122,12 @@ export async function scrapeWebsite(baseUrl) {
     try {
       const u = new URL(path, baseUrl).toString()
       pages.push(u)
-    } catch {}
+    } catch (e) { if (process.env.ALBS_DEBUG) console.warn('[scrape-website] kandidaat-URL overgeslagen:', e.message) }
   }
 
   let allEmails = []
   let kvk = null
+  let btw = null
   let logoUrl = null
   let services = []
   let companyDescription = null
@@ -158,6 +161,12 @@ export async function scrapeWebsite(baseUrl) {
       }
     }
 
+    // BTW-id (art. 3:15d BW verplicht op live sites) — staat vaak in footer/voorwaarden
+    if (!btw) {
+      const mb = text.match(BTW_RE)
+      if (mb) btw = `NL${mb[1]}${mb[2]}${mb[3]}B${mb[4]}`.toUpperCase()
+    }
+
     // Logo — alleen op homepage
     if (url === baseUrl && !logoUrl) {
       const og = $('meta[property="og:image"]').attr('content')
@@ -168,7 +177,7 @@ export async function scrapeWebsite(baseUrl) {
       if (candidate) {
         try {
           logoUrl = new URL(candidate, baseUrl).toString()
-        } catch {}
+        } catch (e) { if (process.env.ALBS_DEBUG) console.warn('[scrape-website] kandidaat-URL overgeslagen:', e.message) }
       }
     }
 
@@ -196,11 +205,11 @@ export async function scrapeWebsite(baseUrl) {
             if (typeof img === 'string') {
               try {
                 ownerPhotoUrl = new URL(img, baseUrl).toString()
-              } catch {}
+              } catch (e) { if (process.env.ALBS_DEBUG) console.warn('[scrape-website] kandidaat-URL overgeslagen:', e.message) }
             }
             if (item?.founder?.name && !ownerName) ownerName = item.founder.name
           }
-        } catch {}
+        } catch (e) { if (process.env.ALBS_DEBUG) console.warn('[scrape-website] kandidaat-URL overgeslagen:', e.message) }
       })
 
       // 2) Foto met alt-text die "eigenaar"/"oprichter"/"team" bevat
@@ -217,7 +226,7 @@ export async function scrapeWebsite(baseUrl) {
               if (!/icon|logo|banner|hero|background/i.test(src)) {
                 ownerPhotoUrl = u
               }
-            } catch {}
+            } catch (e) { if (process.env.ALBS_DEBUG) console.warn('[scrape-website] kandidaat-URL overgeslagen:', e.message) }
           }
         })
       }
@@ -232,7 +241,7 @@ export async function scrapeWebsite(baseUrl) {
             if (img) {
               try {
                 ownerPhotoUrl = new URL(img, baseUrl).toString()
-              } catch {}
+              } catch (e) { if (process.env.ALBS_DEBUG) console.warn('[scrape-website] kandidaat-URL overgeslagen:', e.message) }
             }
           }
         })
@@ -274,6 +283,7 @@ export async function scrapeWebsite(baseUrl) {
     emails: allEmails,
     businessEmail: pickBusinessEmail(allEmails),
     kvk,
+    btw,
     logoUrl,
     services: services.slice(0, 8),
     companyDescription,

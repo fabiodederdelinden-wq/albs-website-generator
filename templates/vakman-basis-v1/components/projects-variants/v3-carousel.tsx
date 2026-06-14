@@ -46,7 +46,7 @@ export default function ProjectsV3Carousel(p: ProjectsProps) {
         </div>
         <div className="hidden sm:flex items-center gap-2 text-sm text-zinc-500">
           <span>scroll</span>
-          <svg className="v3p-hint" width="20" height="14" viewBox="0 0 20 14" fill="none">
+          <svg aria-hidden="true" className="v3p-hint" width="20" height="14" viewBox="0 0 20 14" fill="none">
             <path d="M1 7H18M18 7L12 1M18 7L12 13" stroke={p.primaryColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>

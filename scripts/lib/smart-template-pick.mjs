@@ -5,7 +5,8 @@
  * Hero/intro/layout: uit variants-manifest.json (legacy, blijft werken).
  * Reviews/owner/services/projects/trust/contact/header/footer:
  *   uit variants-registry.json (status === 'approved' filter).
- *   Bij lege approved-set per sectie: fallback variant 1 met warning.
+ *   Bij lege approved-set per sectie: fallback uit SECTION_FALLBACKS
+ *   (approved + contract-compleet, NOOIT blind variant 1) met warning.
  */
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
@@ -47,13 +48,64 @@ function approvedIds(registry, section) {
   return ids
 }
 
+// Fallback per sectie = een variant die het sectie-contract haalt (compleet, approved).
+// NOOIT blind variant 1: bij footer/trust/owner/contact/header is v1 afgekeurd of te kaal.
+const SECTION_FALLBACKS = {
+  header: 2,
+  services: 1,
+  projects: 1,
+  reviews: 1,
+  trust: 3,
+  owner: 2,
+  contact: 3,
+  footer: 3,
+}
+
 function pickFromRegistry(registry, section, warnings) {
   const ids = approvedIds(registry, section)
   if (ids.length === 0) {
-    warnings.push(`${section}: geen approved varianten, fallback variant 1`)
-    return 1
+    const fb = SECTION_FALLBACKS[section] ?? 1
+    warnings.push(`${section}: geen approved varianten, fallback variant ${fb}`)
+    return fb
   }
   return pickRandom(ids)
+}
+
+// Achtergrond van een sectie-variant (uit manifest.sectionBackgrounds). Default light.
+function bgOf(manifest, section, id) {
+  const bg = manifest?.sectionBackgrounds?.[section]
+  if (!bg) return 'light'
+  if (bg.dark?.includes(id)) return 'dark'
+  if (bg.tinted?.includes(id)) return 'tinted'
+  return 'light'
+}
+
+// Body-flow waarvoor achtergrond-ritme telt (header is sticky/overlay, los gekozen).
+const FLOW_SECTIONS = ['services', 'projects', 'reviews', 'trust', 'owner', 'contact', 'footer']
+
+// Kiest alle secties met design-contract-bewustzijn: vermijdt twee dark secties
+// direct op elkaar (zwaar/schokkend) als er een niet-dark approved alternatief is.
+function pickSections(registry, manifest, warnings) {
+  const picks = { header: pickFromRegistry(registry, 'header', warnings) }
+  let prevBg = null
+  for (const sec of FLOW_SECTIONS) {
+    const ids = approvedIds(registry, sec)
+    let pool = ids
+    if (ids.length === 0) {
+      const fb = SECTION_FALLBACKS[sec] ?? 1
+      warnings.push(`${sec}: geen approved varianten, fallback variant ${fb}`)
+      pool = [fb]
+    }
+    if (prevBg === 'dark') {
+      const nonDark = pool.filter((id) => bgOf(manifest, sec, id) !== 'dark')
+      if (nonDark.length) pool = nonDark
+      else warnings.push(`${sec}: alleen dark varianten approved, dark-na-dark onvermijdelijk`)
+    }
+    const chosen = pickRandom(pool)
+    picks[sec] = chosen
+    prevBg = bgOf(manifest, sec, chosen)
+  }
+  return picks
 }
 
 const LAYOUTS = {
@@ -89,10 +141,7 @@ async function randomPick(niche) {
   const layout = layoutOptions.includes(defaultLayout) ? defaultLayout : pickRandom(layoutOptions)
   const heroChoice = pickRandom(heroOptions)
 
-  const sectionPicks = {}
-  for (const sec of SECTION_LIST) {
-    sectionPicks[sec] = pickFromRegistry(registry, sec, warnings)
-  }
+  const sectionPicks = pickSections(registry, manifest, warnings)
 
   return {
     layout,

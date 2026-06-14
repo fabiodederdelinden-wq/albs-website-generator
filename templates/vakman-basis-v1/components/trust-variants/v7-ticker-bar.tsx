@@ -15,7 +15,7 @@ export default function TrustV7TickerBar(p: TrustProps) {
     `${p.reviewCount} 5-sterren reviews`,
     'Vaste prijs vooraf',
     'Binnen 2u ter plekke',
-  ]
+  ].filter(Boolean)
 
   // Dubbel renderen voor naadloze marquee-loop
   const doubled = [...items, ...items]

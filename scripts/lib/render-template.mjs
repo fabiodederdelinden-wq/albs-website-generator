@@ -9,18 +9,32 @@ import path from 'node:path'
 const REPLACE_EXTS = new Set(['.tsx', '.ts', '.css', '.html', '.json', '.md', '.mjs'])
 const SKIP_DIRS = new Set(['node_modules', '.next', '.turbo', 'dist'])
 
+// Voor TSX/TS/CSS/MD: waarde komt in een single-quoted JS-string terecht.
+// Backslashes volledig strippen (komen niet legitiem voor in bedrijfsdata en
+// zouden anders escape-sequences vormen), daarna apostrofs escapen.
 function sanitizeForJsString(value) {
   return String(value ?? '')
     .replace(/[\r\n\t]+/g, ' ')
+    .replace(/\\/g, '')
     .replace(/'/g, "\\'")
-    .replace(/\\$/g, '')
     .trim()
 }
 
-function applyReplacements(text, placeholders) {
+// Voor .json-bestanden: JSON-string-escaping (apostrof mag NIET ge-escaped,
+// dubbele quote en backslash juist wel). JSON.stringify minus de buitenquotes.
+function sanitizeForJson(value) {
+  const clean = String(value ?? '').replace(/[\r\n\t]+/g, ' ').trim()
+  return JSON.stringify(clean).slice(1, -1)
+}
+
+function applyReplacements(text, placeholders, ext) {
   let out = text
+  const sanitize = ext === '.json' ? sanitizeForJson : sanitizeForJsString
   for (const [k, v] of Object.entries(placeholders)) {
-    out = out.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), sanitizeForJsString(v))
+    const sanitized = sanitize(v)
+    // Replacement als functie: voorkomt dat $-tekens in klantdata ($&, $1, $$)
+    // door String.replace als pattern-referentie worden geïnterpreteerd.
+    out = out.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), () => sanitized)
   }
   return out
 }
@@ -30,6 +44,7 @@ async function walkAndReplace(srcDir, dstDir, placeholders) {
   const entries = await readdir(srcDir, { withFileTypes: true })
   for (const ent of entries) {
     if (ent.name.startsWith('.dummy-customer')) continue
+    if (ent.name.endsWith('.tsbuildinfo')) continue
     if (SKIP_DIRS.has(ent.name)) continue
     const s = path.join(srcDir, ent.name)
     const d = path.join(dstDir, ent.name)
@@ -38,7 +53,7 @@ async function walkAndReplace(srcDir, dstDir, placeholders) {
       const ext = path.extname(ent.name)
       if (REPLACE_EXTS.has(ext)) {
         const c = await readFile(s, 'utf8')
-        await writeFile(d, applyReplacements(c, placeholders))
+        await writeFile(d, applyReplacements(c, placeholders, ext))
       } else {
         await cp(s, d)
       }

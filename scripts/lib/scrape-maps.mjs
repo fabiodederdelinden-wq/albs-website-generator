@@ -49,11 +49,10 @@ export async function scrapeMapsList(niche, stad, take = 15) {
       }))
     }, take)
 
-    await browser.close()
     return cards.filter((c) => c.name && c.href)
-  } catch (err) {
-    await browser.close()
-    throw err
+  } finally {
+    // finally: browser-proces mag nooit lekken, ook niet bij crash mid-scrape
+    await browser.close().catch(() => {})
   }
 }
 
@@ -73,7 +72,9 @@ export async function scrapeMapsDetail(detailUrl) {
         .locator('button:has-text("Alles afwijzen"), button:has-text("Reject all")')
         .first()
         .click({ timeout: 3000 })
-    } catch {}
+    } catch {
+      /* optioneel: consent-dialog niet altijd aanwezig */
+    }
 
     await page.waitForTimeout(3000)
 
@@ -122,7 +123,9 @@ export async function scrapeMapsDetail(detailUrl) {
             el.scrollTop = el.scrollHeight
           })
           await page.waitForTimeout(1500)
-        } catch {}
+        } catch {
+          /* optioneel veld: extra review-batch mag falen */
+        }
 
         // Klik "Meer/More" buttons om volledige review-tekst te tonen
         try {
@@ -131,7 +134,9 @@ export async function scrapeMapsDetail(detailUrl) {
           for (let i = 0; i < Math.min(count, 6); i++) {
             await moreButtons.nth(i).click({ timeout: 800 }).catch(() => {})
           }
-        } catch {}
+        } catch {
+          /* optioneel veld: "Meer"-knoppen niet altijd aanwezig */
+        }
 
         reviewSnippets = await page.evaluate(() => {
           const list = Array.from(document.querySelectorAll('div.jftiEf')).slice(0, 8)
@@ -176,11 +181,10 @@ export async function scrapeMapsDetail(detailUrl) {
           return out
         })
       }
-    } catch {
-      /* reviews-tab niet beschikbaar */
+    } catch (err) {
+      // Reviews zijn kern-data: stil falen hindert debugging
+      console.warn('[scrape-maps] reviews-scrape faalde:', err?.message ?? err)
     }
-
-    await browser.close()
 
     // Parse adres → postcode + city
     let postcode = ''
@@ -216,8 +220,8 @@ export async function scrapeMapsDetail(detailUrl) {
       reviewSnippets,
       category: head.category,
     }
-  } catch (err) {
-    await browser.close()
-    throw err
+  } finally {
+    // finally: browser-proces mag nooit lekken, ook niet bij crash mid-scrape
+    await browser.close().catch(() => {})
   }
 }

@@ -1,6 +1,7 @@
 export interface FooterProps {
   businessName: string
   kvk?: string
+  btw?: string
   primaryColor: string
   accentColor?: string
   phone?: string

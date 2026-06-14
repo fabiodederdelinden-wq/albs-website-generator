@@ -25,7 +25,7 @@ export default function TrustV4KvkProminent(p: TrustProps) {
               style={{ background: p.primaryColor }}
             />
             <p className="text-[10px] font-mono tracking-[0.3em] uppercase text-[var(--color-ink-400)] mb-4">
-              · OFFICIEEL GEREGISTREERD
+              {kvkOk ? '· OFFICIEEL GEREGISTREERD' : '· BEWEZEN VAKMANSCHAP'}
             </p>
             {kvkOk ? (
               <>
@@ -39,10 +39,10 @@ export default function TrustV4KvkProminent(p: TrustProps) {
             ) : (
               <>
                 <p className="font-display font-black text-3xl md:text-5xl tracking-tight leading-tight">
-                  KvK: <span style={{ color: p.primaryColor }}>niet beschikbaar</span>
+                  <span style={{ color: p.primaryColor }}>{years} jaar</span> vakmanschap
                 </p>
                 <p className="mt-3 text-base md:text-lg text-[var(--color-ink-300)]">
-                  {years} jaar actief in het vak
+                  Actief sinds {startYear} · ervaring waar je op kunt bouwen
                 </p>
               </>
             )}
@@ -51,7 +51,7 @@ export default function TrustV4KvkProminent(p: TrustProps) {
                 <path d="M12 2 L4 6 V12 C4 17 8 21 12 22 C16 21 20 17 20 12 V6 Z" strokeLinejoin="round" />
                 <path d="M9 12 L11 14 L15 10" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              <span className="text-xs font-mono tracking-wider uppercase">Officieel ingeschreven</span>
+              <span className="text-xs font-mono tracking-wider uppercase">{kvkOk ? 'Officieel ingeschreven' : 'Garantie op vakwerk'}</span>
             </div>
           </div>
 

@@ -49,6 +49,17 @@ if grep -rqE "/home/fabio|team_K6|fabio-de-derde-linden" scripts/ 2>/dev/null; t
   bad "hardcoded persoonlijk pad/team in scripts/"
 else ok "geen hardcoded persoonlijke paden"; fi
 
+# 10. Gate-smoke: render+build+gate met lege optionals (vangt empty-BTW/review-loze edge-cases)
+if [ -d "templates/vakman-basis-v1/node_modules" ]; then
+  if node scripts/smoke-render.mjs >/tmp/albs-smoke.log 2>&1; then
+    ok "gate-smoke groen (lege BTW/e-mail/reviews bouwen + passeren de QA-gate)"
+  else
+    bad "gate-smoke faalt — zie /tmp/albs-smoke.log"
+  fi
+else
+  war "gate-smoke overgeslagen — installeer eerst template-deps (cd templates/vakman-basis-v1 && pnpm install)"
+fi
+
 echo ""
 echo -e "Resultaat: ${GREEN}${pass} OK${NC}, ${YELLOW}${warn} waarschuwing${NC}, ${RED}${fail} fout${NC}"
 [ "$fail" -eq 0 ] && echo -e "${GREEN}Klaar voor productie.${NC}" || echo -e "${RED}Los de fouten op vóór gebruik.${NC}"

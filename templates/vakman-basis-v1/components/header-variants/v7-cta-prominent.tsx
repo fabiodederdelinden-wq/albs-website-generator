@@ -30,7 +30,7 @@ export default function HeaderV7CtaProminent(p: HeaderProps) {
         </a>
 
         <nav className="hidden lg:flex items-center gap-5 flex-1 justify-center">
-          {NAV_ITEMS.map((item) => (
+          {(p.navItems ?? NAV_ITEMS).map((item) => (
             <a
               key={item.href}
               href={item.href}
@@ -51,7 +51,7 @@ export default function HeaderV7CtaProminent(p: HeaderProps) {
               ['--ring' as string]: `${p.primaryColor}55`,
             } as React.CSSProperties}
           >
-            <svg className="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+            <svg aria-hidden="true" className="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92Z" />
             </svg>
             <span className="flex flex-col items-start leading-tight">
@@ -66,7 +66,7 @@ export default function HeaderV7CtaProminent(p: HeaderProps) {
             rel="noopener"
             className="v7-wa inline-flex items-center gap-2 px-4 md:px-5 py-2.5 md:py-3 rounded-lg text-sm font-bold text-white"
           >
-            <svg className="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="currentColor">
+            <svg aria-hidden="true" className="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="currentColor">
               <path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z" />
             </svg>
             <span className="flex flex-col items-start leading-tight">

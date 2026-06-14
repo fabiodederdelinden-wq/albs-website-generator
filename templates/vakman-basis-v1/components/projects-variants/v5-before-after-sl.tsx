@@ -39,7 +39,7 @@ function BeforeAfter({ project, primaryColor, accentColor, index }: { project: P
         {/* Verticale splitlijn */}
         <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-0.5" style={{ background: primaryColor, boxShadow: `0 0 12px ${primaryColor}` }}>
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white shadow-lg flex items-center justify-center" style={{ borderColor: primaryColor, borderWidth: '2px' }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M5 1L1 7L5 13M9 1L13 7L9 13" stroke={primaryColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>

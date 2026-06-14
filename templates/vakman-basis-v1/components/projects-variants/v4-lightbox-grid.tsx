@@ -29,7 +29,7 @@ function LightboxCard({ project, primaryColor, accentColor, index }: { project: 
         </p>
       </div>
       <div className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/15 backdrop-blur-sm border border-white/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
           <path d="M1 7H13M13 7L7 1M13 7L7 13" stroke="white" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </div>

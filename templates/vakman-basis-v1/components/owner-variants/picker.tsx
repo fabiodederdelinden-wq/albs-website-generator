@@ -38,7 +38,8 @@ export default function OwnerPicker({ variantId, ...rest }: PickerProps) {
       return <V9 {...rest} />
     case 10:
       return <V10 {...rest} />
+    // Fallback = V2 (enige approved owner-variant); v1 is afgekeurd.
     default:
-      return <V1 {...rest} />
+      return <V2 {...rest} />
   }
 }

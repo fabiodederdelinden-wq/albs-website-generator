@@ -1,5 +1,6 @@
 import type { FooterProps } from './types'
 import { telHref, mailHref, softTint } from './types'
+import LegalLinks from './legal-links'
 
 export default function FooterV10SignatureHand(p: FooterProps) {
   const year = new Date().getFullYear()
@@ -56,6 +57,11 @@ export default function FooterV10SignatureHand(p: FooterProps) {
                 {p.email}
               </a>
             )}
+            {p.address && (
+              <span className="text-neutral-600">
+                {p.address}, {p.postcode} {p.city}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -64,6 +70,8 @@ export default function FooterV10SignatureHand(p: FooterProps) {
           <span>
             © {year} {p.businessName}
             {p.kvk && <span> · KvK {p.kvk}</span>}
+            <span> · </span>
+            <LegalLinks tone="light" />
           </span>
           <span>
             Site door <span style={{ color: p.primaryColor }} className="font-semibold">ALBS</span>

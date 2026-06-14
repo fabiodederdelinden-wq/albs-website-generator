@@ -1,6 +1,7 @@
 import { formatKvk, type TrustProps } from './types'
 
 export default function TrustV9AwardsList(p: TrustProps) {
+  const kvkLabel = formatKvk(p.kvk)
   const years = p.yearsActive ?? 18
   const clients = p.clientsCount ?? 1200
   const warranty = p.warrantyYears ?? 5
@@ -23,10 +24,12 @@ export default function TrustV9AwardsList(p: TrustProps) {
       title: `${clients}+ klussen succesvol voltooid`,
       sub: `In ${years} jaar tijd — van spoed-lekkages tot grote installaties.`,
     },
-    {
-      title: 'KvK-geregistreerd ondernemer',
-      sub: `${formatKvk(p.kvk)} · Officieel actief bij de Kamer van Koophandel.`,
-    },
+    ...(kvkLabel
+      ? [{
+          title: 'KvK-geregistreerd ondernemer',
+          sub: `${kvkLabel} · Officieel actief bij de Kamer van Koophandel.`,
+        }]
+      : []),
   ]
 
   return (

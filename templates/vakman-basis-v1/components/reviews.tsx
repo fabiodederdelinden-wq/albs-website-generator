@@ -4,9 +4,10 @@ import Reveal from './reveal'
 import { Star } from 'lucide-react'
 
 export interface ReviewItem {
-  author: string // Voornaam + initiaal of volledige naam zoals Google toont
-  initials: string // Avatar-letters fallback
-  photoUrl?: string // Google profielfoto-URL (optioneel)
+  author: string // Geanonimiseerd: voornaam + initiaal
+  initials: string // Avatar-letters
+  /** @deprecated AVG: reviewer-foto's worden nooit gerenderd; veld genegeerd. */
+  photoUrl?: string
   text: string
   rating: number
   date: string
@@ -52,20 +53,9 @@ function StarRow({ rating, color, size = 14 }: { rating: number; color: string; 
   )
 }
 
-function Avatar({ photoUrl, initials, color, size = 40 }: { photoUrl?: string; initials: string; color: string; size?: number }) {
-  if (photoUrl) {
-    return (
-      <img
-        src={photoUrl}
-        alt=""
-        width={size}
-        height={size}
-        loading="lazy"
-        className="rounded-full object-cover shrink-0"
-        style={{ width: size, height: size }}
-      />
-    )
-  }
+// AVG: altijd initialen-cirkel in klantkleur. Foto's van reviewers (derden) mogen
+// niet zonder hun toestemming gepubliceerd worden; photoUrl wordt bewust genegeerd.
+function Avatar({ initials, color, size = 40 }: { photoUrl?: string; initials: string; color: string; size?: number }) {
   return (
     <div
       className="rounded-full flex items-center justify-center font-display font-bold text-white shrink-0"

@@ -16,10 +16,12 @@ export default function TrustV1BadgeRow(p: TrustProps) {
         </>
       ),
     },
-    {
-      key: 'kvk',
-      node: <span className="font-mono text-xs tracking-wider">{kvkLabel}</span>,
-    },
+    ...(kvkLabel
+      ? [{
+          key: 'kvk',
+          node: <span className="font-mono text-xs tracking-wider">{kvkLabel}</span>,
+        }]
+      : []),
     {
       key: 'years',
       node: <span className="text-sm"><strong className="font-display font-bold">{years}</strong> jaar actief</span>,

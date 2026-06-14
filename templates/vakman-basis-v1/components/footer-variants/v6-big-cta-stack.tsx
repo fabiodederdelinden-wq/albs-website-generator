@@ -1,5 +1,6 @@
 import type { FooterProps } from './types'
-import { telHref, waHref, darkTint } from './types'
+import { telHref, waHref, mailHref, darkTint } from './types'
+import LegalLinks from './legal-links'
 
 export default function FooterV6BigCtaStack(p: FooterProps) {
   const year = new Date().getFullYear()
@@ -68,6 +69,11 @@ export default function FooterV6BigCtaStack(p: FooterProps) {
                 · {p.address}, {p.postcode} {p.city}
               </span>
             )}
+            {p.email && (
+              <a href={mailHref(p.email)} className="hover:text-white transition-colors">
+                · {p.email}
+              </a>
+            )}
           </div>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <span>© {year}</span>
@@ -75,6 +81,8 @@ export default function FooterV6BigCtaStack(p: FooterProps) {
             <span>
               Site door <span style={{ color: p.primaryColor }} className="font-semibold">ALBS</span>
             </span>
+            <span>·</span>
+            <LegalLinks tone="dark" />
           </div>
         </div>
       </div>

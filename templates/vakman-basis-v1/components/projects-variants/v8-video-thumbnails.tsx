@@ -19,7 +19,7 @@ function VideoCard({ project, primaryColor, accentColor, index }: { project: Pro
             style={{ background: `${primaryColor}f0` }}
           >
             <span className="absolute inset-0 rounded-full v8p-ring" style={{ background: `${primaryColor}55` }} />
-            <svg width="26" height="26" viewBox="0 0 26 26" fill="white" className="relative z-10 ml-1">
+            <svg aria-hidden="true" width="26" height="26" viewBox="0 0 26 26" fill="white" className="relative z-10 ml-1">
               <path d="M5 3L23 13L5 23V3Z" />
             </svg>
           </div>

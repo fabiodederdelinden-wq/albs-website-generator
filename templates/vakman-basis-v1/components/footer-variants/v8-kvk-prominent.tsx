@@ -1,9 +1,10 @@
 import type { FooterProps } from './types'
 import { telHref, mailHref } from './types'
+import LegalLinks from './legal-links'
 
 export default function FooterV8KvkProminent(p: FooterProps) {
   const year = new Date().getFullYear()
-  const btw = p.kvk ? `NL${p.kvk}B01` : null
+  const btw = p.btw || null
   return (
     <footer className="bg-white border-t-2 border-neutral-300 px-6 md:px-12 py-12 font-serif">
       <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -70,6 +71,9 @@ export default function FooterV8KvkProminent(p: FooterProps) {
           <div className="mt-6 pt-6 border-t border-neutral-200 text-xs text-neutral-500 space-y-1">
             <p>© {year} {p.businessName}</p>
             <p>Alle rechten voorbehouden</p>
+            <p>
+              <LegalLinks tone="light" />
+            </p>
             <p className="pt-2">
               Site door <span style={{ color: p.primaryColor }} className="font-semibold">ALBS</span>
             </p>

@@ -2,7 +2,7 @@ import { Stars, Avatar, GoogleG } from './_helpers'
 import type { ReviewsProps } from './types'
 
 export default function ReviewsV8EmbedGoogle(p: ReviewsProps) {
-  const { reviews, reviewCount, reviewRating, sourceUrl, primaryColor } = p
+  const { reviews, reviewCount, reviewRating, sourceUrl, primaryColor, businessName } = p
   // Google-blue palette used inside the widget chrome
   const gBlue = '#1a73e8'
 
@@ -16,7 +16,7 @@ export default function ReviewsV8EmbedGoogle(p: ReviewsProps) {
               <GoogleG size={28} />
               <div>
                 <p className="font-bold text-[15px] leading-tight">Google Reviews</p>
-                <p className="text-[11px] text-neutral-500">Loodgieter Jansen</p>
+                {businessName && <p className="text-[11px] text-neutral-500">{businessName}</p>}
               </div>
             </div>
             <a

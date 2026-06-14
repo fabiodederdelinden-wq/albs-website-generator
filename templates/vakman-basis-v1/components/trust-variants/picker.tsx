@@ -19,6 +19,7 @@ interface TrustPickerProps extends TrustProps {
 
 export default function TrustPicker({ variantId, ...rest }: TrustPickerProps) {
   const idx = Math.max(1, Math.min(10, variantId | 0)) - 1
-  const Variant = VARIANTS[idx] ?? V1
+  // Fallback = V3 (enige approved trust-variant); v1 is afgekeurd.
+  const Variant = VARIANTS[idx] ?? V3
   return <Variant {...rest} />
 }

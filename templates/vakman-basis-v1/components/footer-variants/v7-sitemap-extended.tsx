@@ -1,5 +1,6 @@
 import type { FooterProps } from './types'
 import { telHref, waHref, mailHref, socialHrefs } from './types'
+import LegalLinks from './legal-links'
 
 export default function FooterV7SitemapExtended(p: FooterProps) {
   const year = new Date().getFullYear()
@@ -96,7 +97,11 @@ export default function FooterV7SitemapExtended(p: FooterProps) {
         </div>
       </div>
       <div className="max-w-6xl mx-auto mt-12 pt-6 border-t border-neutral-800 flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-xs text-neutral-500">
-        <span>© {year} {p.businessName}. Alle rechten voorbehouden.</span>
+        <span className="inline-flex flex-wrap items-center gap-2">
+          <span>© {year} {p.businessName}. Alle rechten voorbehouden.</span>
+          <span aria-hidden className="text-neutral-700">·</span>
+          <LegalLinks tone="dark" />
+        </span>
         <span>
           Site door <span style={{ color: p.primaryColor }} className="font-semibold">ALBS</span>
         </span>

@@ -1,4 +1,5 @@
 import Intro, { type IntroPreset } from '../components/intro'
+import LocalBusinessJsonLd from '../components/local-business-jsonld'
 import HeaderPicker from '../components/header-variants/picker'
 import HeroPicker from '../components/hero-picker'
 import ServicesPicker from '../components/services-variants/picker'
@@ -28,6 +29,8 @@ const PROJECTS_RAW = '{{PROJECTS_JSON}}'
 const REVIEWS_SOURCE_URL = '{{REVIEWS_SOURCE_URL}}'
 const HAS_EMAIL: boolean = JSON.parse('{{HAS_EMAIL}}')
 const HAS_KVK: boolean = JSON.parse('{{HAS_KVK}}')
+const BUSINESS_BTW: string = '{{BUSINESS_BTW}}'
+const hasBtw: boolean = !!(BUSINESS_BTW && !BUSINESS_BTW.startsWith('{{'))
 const LAYOUT_VARIANT = '{{LAYOUT_VARIANT}}' as string
 const INTRO_PRESET_RAW = '{{INTRO_PRESET}}'
 const REVIEWS_VARIANT_RAW = '{{REVIEWS_VARIANT}}'
@@ -84,10 +87,11 @@ function safeParseB64<T>(b64: string, fallback: T): T {
 
 const services = safeB64StringArray(SERVICES_B64)
 
+// AVG: bewust GEEN photoUrl — foto's van reviewers worden nooit gepubliceerd,
+// namen zijn geanonimiseerd (voornaam + initiaal) vóór ze het template bereiken.
 interface ReviewWire {
   author: string
   initials: string
-  photoUrl?: string
   text: string
   rating: number
   date: string
@@ -97,6 +101,14 @@ const projectItems = safeParseB64<Array<{ title: string; caption: string; imageU
   PROJECTS_RAW,
   [],
 )
+
+// Nav toont alleen secties die echt renderen — reviews verschijnt alleen als er
+// review-snippets zijn. Zo nooit een dode /#reviews-anchor (gate-failure voorkomen).
+const navItems = [
+  { label: 'Diensten', href: '/#diensten' },
+  ...(reviewItems.length > 0 ? [{ label: 'Reviews', href: '/#reviews' }] : []),
+  { label: 'Contact', href: '/#contact' },
+]
 
 const INTRO_MODULES = ['CONTACT', 'WHATSAPP', 'DIENSTEN', 'REVIEWS', 'LOKALE SEO']
 
@@ -110,6 +122,7 @@ export default function HomePage() {
       primaryColor={PRIMARY_COLOR}
       services={services}
       niche={niche}
+      navItems={navItems}
     />
   )
   const sharedHero = (
@@ -126,16 +139,20 @@ export default function HomePage() {
       niche={niche}
     />
   )
+  // id-wrappers: anchor-targets voor de header-nav (/#diensten etc.) vanaf elke pagina.
+  // scroll-mt compenseert sticky headers.
   const sharedServices = (
-    <ServicesPicker
-      variantId={servicesVariant}
-      services={services}
-      primaryColor={PRIMARY_COLOR}
-      accentColor={accentColor}
-      businessName={BUSINESS_NAME}
-      niche={niche}
-      phone={BUSINESS_PHONE}
-    />
+    <div id="diensten" className="scroll-mt-24">
+      <ServicesPicker
+        variantId={servicesVariant}
+        services={services}
+        primaryColor={PRIMARY_COLOR}
+        accentColor={accentColor}
+        businessName={BUSINESS_NAME}
+        niche={niche}
+        phone={BUSINESS_PHONE}
+      />
+    </div>
   )
   const sharedProjects =
     projectItems.length > 0 ? (
@@ -149,22 +166,25 @@ export default function HomePage() {
     ) : null
   const sharedReviews =
     reviewItems.length > 0 ? (
-      <ReviewsPicker
-        variantId={reviewsVariant}
-        reviews={reviewItems}
-        reviewCount={REVIEW_COUNT}
-        reviewRating={REVIEW_RATING}
-        sourceUrl={REVIEWS_SOURCE_URL}
-        primaryColor={PRIMARY_COLOR}
-        accentColor={accentColor}
-      />
+      <div id="reviews" className="scroll-mt-24">
+        <ReviewsPicker
+          variantId={reviewsVariant}
+          businessName={BUSINESS_NAME}
+          reviews={reviewItems}
+          reviewCount={REVIEW_COUNT}
+          reviewRating={REVIEW_RATING}
+          sourceUrl={REVIEWS_SOURCE_URL}
+          primaryColor={PRIMARY_COLOR}
+          accentColor={accentColor}
+        />
+      </div>
     ) : null
   const sharedTrust = (
     <TrustPicker
       variantId={trustVariant}
       reviewCount={REVIEW_COUNT}
       reviewRating={REVIEW_RATING}
-      kvk={HAS_KVK ? BUSINESS_KVK : '••••••••'}
+      kvk={HAS_KVK ? BUSINESS_KVK : ''}
       primaryColor={PRIMARY_COLOR}
       accentColor={accentColor}
     />
@@ -182,18 +202,20 @@ export default function HomePage() {
   ) : null
 
   const sharedContact = (
-    <ContactPicker
-      variantId={contactVariant}
-      businessName={BUSINESS_NAME}
-      phone={BUSINESS_PHONE}
-      email={HAS_EMAIL ? BUSINESS_EMAIL : ''}
-      whatsapp={BUSINESS_WHATSAPP}
-      address={BUSINESS_ADDRESS}
-      postcode={BUSINESS_POSTCODE}
-      city={BUSINESS_CITY}
-      primaryColor={PRIMARY_COLOR}
-      accentColor={accentColor}
-    />
+    <div id="contact" className="scroll-mt-24">
+      <ContactPicker
+        variantId={contactVariant}
+        businessName={BUSINESS_NAME}
+        phone={BUSINESS_PHONE}
+        email={HAS_EMAIL ? BUSINESS_EMAIL : ''}
+        whatsapp={BUSINESS_WHATSAPP}
+        address={BUSINESS_ADDRESS}
+        postcode={BUSINESS_POSTCODE}
+        city={BUSINESS_CITY}
+        primaryColor={PRIMARY_COLOR}
+        accentColor={accentColor}
+      />
+    </div>
   )
 
   let mainSections: React.ReactNode
@@ -250,6 +272,11 @@ export default function HomePage() {
 
   return (
     <>
+      <LocalBusinessJsonLd
+        reviewCount={REVIEW_COUNT}
+        reviewRating={REVIEW_RATING}
+        hasVisibleReviews={reviewItems.length > 0}
+      />
       <Intro
         businessName={BUSINESS_NAME}
         primaryColor={PRIMARY_COLOR}
@@ -271,6 +298,8 @@ export default function HomePage() {
         city={BUSINESS_CITY}
         postcode={BUSINESS_POSTCODE}
         services={services}
+        ownerName={OWNER_NAME && !OWNER_NAME.startsWith('{{') ? OWNER_NAME : ''}
+        btw={hasBtw ? BUSINESS_BTW : ''}
       />
     </>
   )

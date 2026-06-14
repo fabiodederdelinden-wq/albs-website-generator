@@ -29,9 +29,9 @@ export function hasValidKvk(kvk: string | undefined | null): boolean {
   return /\d/.test(trimmed)
 }
 
-/** Render-veilige KvK-string of fallback-tekst. */
+/** Render-veilige KvK-string, of lege string wanneer onbekend (dan segment weglaten). */
 export function formatKvk(kvk: string | undefined | null): string {
-  return hasValidKvk(kvk) ? `KvK ${kvk}` : 'KvK: niet beschikbaar'
+  return hasValidKvk(kvk) ? `KvK ${kvk}` : ''
 }
 
 /** 5 sterren SVG inline, gevuld op basis van rating. */

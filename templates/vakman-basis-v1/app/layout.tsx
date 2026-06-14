@@ -1,33 +1,63 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
+import { Inter, Roboto, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
-import ClarityInit from '../components/clarity-init'
+import CookieConsent from '../components/cookie-consent'
+import { SITE, siteUrl } from './site-config'
+
+// Self-hosted via next/font (download bij build, niet bij bezoeker):
+// geen IP-doorgifte aan Google (AVG) en sneller laden dan de externe stylesheet.
+const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-inter', display: 'swap' })
+const roboto = Roboto({ subsets: ['latin'], weight: ['700', '900'], variable: '--font-roboto', display: 'swap' })
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-jetbrains', display: 'swap' })
 
 const CLARITY_PROJECT_ID: string = '{{CLARITY_PROJECT_ID}}'
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl()),
   title: '{{BUSINESS_NAME}} · {{BUSINESS_CITY}}',
   description: '{{BUSINESS_TAGLINE}}',
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
+    locale: 'nl_NL',
+    siteName: '{{BUSINESS_NAME}}',
+    title: '{{BUSINESS_NAME}} · {{BUSINESS_CITY}}',
+    description: '{{BUSINESS_TAGLINE}}',
+    url: '/',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '{{BUSINESS_NAME}} · {{BUSINESS_CITY}}',
+    description: '{{BUSINESS_TAGLINE}}',
+  },
 }
 
-// Pre-intro boot-script: zet intro-pending class direct, voorkomt flicker
-const bootScript = `(function(){try{var sk=sessionStorage.getItem('albs-intro-seen');var rm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;if(!sk && !rm){document.documentElement.classList.add('intro-pending','intro-active');}}catch(e){}})();`
+export const viewport: Viewport = {
+  themeColor: SITE.primaryColor,
+}
+
+// Pre-intro boot-script: zet intro-pending class direct, voorkomt flicker.
+// Alleen op de homepage — subpagina's (privacy/cookies) hebben geen Intro-component
+// die de class weer weghaalt en zouden anders permanent verborgen blijven.
+const bootScript = `(function(){try{if(location.pathname!=='/')return;var sk=sessionStorage.getItem('albs-intro-seen');var rm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;if(!sk && !rm){document.documentElement.classList.add('intro-pending','intro-active');}}catch(e){}})();`
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const hasClarity: boolean = !!(CLARITY_PROJECT_ID && !CLARITY_PROJECT_ID.startsWith('{{'))
   return (
-    <html lang="nl" id="top">
+    <html
+      lang="nl"
+      id="top"
+      className={`${inter.variable} ${roboto.variable} ${jetbrainsMono.variable}`}
+    >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto:wght@700;900&family=JetBrains+Mono:wght@400;500&display=swap"
-          rel="stylesheet"
-        />
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
       <body>
-        {hasClarity && <ClarityInit projectId={CLARITY_PROJECT_ID} />}
         {children}
+        <CookieConsent
+          projectId={CLARITY_PROJECT_ID}
+          siteMode={SITE.mode}
+          primaryColor={SITE.primaryColor}
+        />
       </body>
     </html>
   )

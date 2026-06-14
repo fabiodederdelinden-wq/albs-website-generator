@@ -1,4 +1,5 @@
-import type { FooterProps } from './types'
+import { telHref, mailHref, type FooterProps } from './types'
+import LegalLinks from './legal-links'
 
 export default function FooterV1MinimalOneCol(p: FooterProps) {
   const year = new Date().getFullYear()
@@ -13,10 +14,36 @@ export default function FooterV1MinimalOneCol(p: FooterProps) {
               <span>KvK {p.kvk}</span>
             </>
           )}
-          {p.city && (
+          {p.address ? (
             <>
               <span className="text-neutral-300">·</span>
-              <span>{p.city}</span>
+              <span>
+                {p.address}
+                {(p.postcode || p.city) && `, ${[p.postcode, p.city].filter(Boolean).join(' ')}`}
+              </span>
+            </>
+          ) : (
+            p.city && (
+              <>
+                <span className="text-neutral-300">·</span>
+                <span>{p.city}</span>
+              </>
+            )
+          )}
+          {p.phone && (
+            <>
+              <span className="text-neutral-300">·</span>
+              <a href={telHref(p.phone)} className="hover:text-neutral-900 transition-colors">
+                {p.phone}
+              </a>
+            </>
+          )}
+          {p.email && (
+            <>
+              <span className="text-neutral-300">·</span>
+              <a href={mailHref(p.email)} className="hover:text-neutral-900 transition-colors">
+                {p.email}
+              </a>
             </>
           )}
         </div>
@@ -28,6 +55,8 @@ export default function FooterV1MinimalOneCol(p: FooterProps) {
           <span>
             Site door <span style={{ color: p.primaryColor }} className="font-semibold">ALBS</span>
           </span>
+          <span className="text-neutral-300">·</span>
+          <LegalLinks tone="light" />
         </div>
       </div>
     </footer>

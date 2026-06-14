@@ -1,5 +1,6 @@
 import type { FooterProps } from './types'
-import { telHref, waHref, softTint } from './types'
+import { telHref, waHref, mailHref, softTint } from './types'
+import LegalLinks from './legal-links'
 
 export default function FooterV3WithMap(p: FooterProps) {
   const year = new Date().getFullYear()
@@ -83,6 +84,14 @@ export default function FooterV3WithMap(p: FooterProps) {
                 </a>
               </div>
             )}
+            {p.email && (
+              <div className="flex items-center gap-3">
+                <span className="text-neutral-400">✉️</span>
+                <a href={mailHref(p.email)} className="hover:underline break-all">
+                  {p.email}
+                </a>
+              </div>
+            )}
             {p.whatsapp && (
               <div className="flex items-center gap-3">
                 <span className="text-neutral-400">💬</span>
@@ -102,7 +111,8 @@ export default function FooterV3WithMap(p: FooterProps) {
       <div className="border-t border-neutral-200 py-4 px-6 md:px-12">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-xs text-neutral-500">
           <span>
-            © {year} {p.businessName} {p.kvk && <span className="text-neutral-400">· KvK {p.kvk}</span>}
+            © {year} {p.businessName} {p.kvk && <span className="text-neutral-400">· KvK {p.kvk}</span>}{' '}
+            <span className="text-neutral-400">·</span> <LegalLinks tone="light" />
           </span>
           <span>
             Site door <span style={{ color: p.primaryColor }} className="font-semibold">ALBS</span>

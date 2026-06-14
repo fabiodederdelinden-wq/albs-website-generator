@@ -27,6 +27,7 @@ export default function HeaderPicker({ variantId, ...rest }: PickerProps) {
     case 8: return <V8 {...rest} />
     case 9: return <V9 {...rest} />
     case 10: return <V10 {...rest} />
-    default: return <V1 {...rest} />
+    // Fallback = v2 (approved); v1 is voor deze sectie afgekeurd.
+    default: return <V2 {...rest} />
   }
 }

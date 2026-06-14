@@ -1,6 +1,7 @@
 import { StarsRating, formatKvk, type TrustProps } from './types'
 
 export default function TrustV10SingleStatLg(p: TrustProps) {
+  const kvkLabel = formatKvk(p.kvk)
   const clients = p.clientsCount ?? 1200
   const years = p.yearsActive ?? 18
 
@@ -52,8 +53,12 @@ export default function TrustV10SingleStatLg(p: TrustProps) {
           <span className="font-display font-bold text-base">{p.reviewRating.toFixed(1)}</span>
           <span className="text-sm text-[var(--color-ink-500)]">·</span>
           <span className="text-sm text-[var(--color-ink-600)]">{p.reviewCount} reviews</span>
-          <span className="text-sm text-[var(--color-ink-500)]">·</span>
-          <span className="text-xs font-mono tracking-wider text-[var(--color-ink-600)]">{formatKvk(p.kvk)}</span>
+          {kvkLabel && (
+            <>
+              <span className="text-sm text-[var(--color-ink-500)]">·</span>
+              <span className="text-xs font-mono tracking-wider text-[var(--color-ink-600)]">{kvkLabel}</span>
+            </>
+          )}
         </div>
       </div>
     </section>

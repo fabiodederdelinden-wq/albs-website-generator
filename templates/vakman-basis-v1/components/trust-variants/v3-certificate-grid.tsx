@@ -1,6 +1,10 @@
 import { BadgeIcon, formatKvk, type BadgeIconProps, type TrustProps } from './types'
 
 export default function TrustV3CertificateGrid(p: TrustProps) {
+  const metaLine = [formatKvk(p.kvk), `${p.reviewRating.toFixed(1)}★ (${p.reviewCount} reviews)`]
+    .filter(Boolean)
+    .join(' · ')
+
   const certs: Array<{ kind: BadgeIconProps['kind']; label: string; sub: string }> = [
     { kind: 'vca', label: 'VCA', sub: 'Veiligheids-checklist' },
     { kind: 'kiwa', label: 'KIWA', sub: 'Erkend installateur' },
@@ -26,7 +30,7 @@ export default function TrustV3CertificateGrid(p: TrustProps) {
             Erkend en gecertificeerd
           </h2>
           <p className="mt-3 text-sm text-[var(--color-ink-500)] font-mono tracking-wider">
-            {formatKvk(p.kvk)} · {p.reviewRating.toFixed(1)}★ ({p.reviewCount} reviews)
+            {metaLine}
           </p>
         </div>
 

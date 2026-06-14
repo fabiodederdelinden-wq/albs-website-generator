@@ -1,6 +1,7 @@
 import { StarsRating, formatKvk, type TrustProps } from './types'
 
 export default function TrustV2StatsCounter(p: TrustProps) {
+  const kvkLabel = formatKvk(p.kvk)
   const years = p.yearsActive ?? 18
   const clients = p.clientsCount ?? 1200
   const warranty = p.warrantyYears ?? 5
@@ -60,9 +61,11 @@ export default function TrustV2StatsCounter(p: TrustProps) {
           <h2 className="font-display font-black text-3xl md:text-5xl tracking-tight">
             Bewijs in plaats van beloftes
           </h2>
-          <p className="mt-3 text-sm md:text-base text-[var(--color-ink-300)] max-w-2xl mx-auto">
-            {formatKvk(p.kvk)} · ingeschreven bij de Kamer van Koophandel.
-          </p>
+          {kvkLabel && (
+            <p className="mt-3 text-sm md:text-base text-[var(--color-ink-300)] max-w-2xl mx-auto">
+              {kvkLabel} · ingeschreven bij de Kamer van Koophandel.
+            </p>
+          )}
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10">

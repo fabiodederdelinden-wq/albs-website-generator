@@ -36,7 +36,7 @@ function TimelineRow({ project, primaryColor, accentColor, index, isLast }: { pr
           <h3 className="font-bold text-zinc-900 text-xl leading-tight">{project.title}</h3>
           <p className="text-zinc-600 mt-2 text-sm leading-relaxed">{project.caption}</p>
           <div className="mt-4 flex items-center gap-2 text-xs text-zinc-500">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M7 1V7L11 9M13 7A6 6 0 1 1 1 7A6 6 0 0 1 13 7Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
             <span>Opgeleverd</span>

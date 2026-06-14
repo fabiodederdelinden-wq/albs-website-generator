@@ -3,6 +3,11 @@ import { type ContactProps, telHref, waHref, mailHref, softTint, darkTint } from
 export default function ContactV3MapInfoSide(p: ContactProps) {
   return (
     <section className="py-20 px-6 md:px-12 bg-white">
+      <style>{`
+        @keyframes v3-map-pulse { 0%, 100% { r: 32px; fill-opacity: .25; } 50% { r: 48px; fill-opacity: 0; } }
+        .v3-map-pulse { animation: v3-map-pulse 3s ease-in-out infinite; }
+        @media (prefers-reduced-motion: reduce) { .v3-map-pulse { animation: none; } }
+      `}</style>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <p className="text-[10px] font-mono tracking-[0.3em] uppercase text-neutral-500 mb-3">· VIND ONS</p>
@@ -30,10 +35,7 @@ export default function ContactV3MapInfoSide(p: ContactProps) {
               <circle cx="320" cy="300" r="14" fill={softTint(p.primaryColor, 40)} stroke={p.primaryColor} strokeWidth="1.5" />
               <circle cx="80" cy="320" r="10" fill={softTint(p.primaryColor, 40)} stroke={p.primaryColor} strokeWidth="1.5" />
               <g transform="translate(200 200)">
-                <circle r="32" fill={p.primaryColor} fillOpacity="0.2">
-                  <animate attributeName="r" values="32;48;32" dur="3s" repeatCount="indefinite" />
-                  <animate attributeName="fill-opacity" values="0.25;0;0.25" dur="3s" repeatCount="indefinite" />
-                </circle>
+                <circle className="v3-map-pulse" r="32" fill={p.primaryColor} fillOpacity="0.2" />
                 <path d="M 0 -22 C -12 -22 -20 -12 -20 0 C -20 14 0 28 0 28 C 0 28 20 14 20 0 C 20 -12 12 -22 0 -22 Z"
                   fill={p.primaryColor} stroke="white" strokeWidth="2.5" />
                 <circle r="5" fill="white" cy="-4" />
@@ -63,7 +65,7 @@ export default function ContactV3MapInfoSide(p: ContactProps) {
                 <span aria-hidden="true">→</span>
               </a>
               {p.whatsapp ? (
-                <a href={waHref(p.whatsapp)} target="_blank" rel="noopener"
+                <a href={waHref(p.whatsapp)} target="_blank" rel="noopener noreferrer"
                   className="flex items-center justify-between p-4 rounded-lg border-2 transition hover:bg-neutral-50"
                   style={{ borderColor: p.primaryColor, color: p.primaryColor }}>
                   <span className="font-bold">Stuur WhatsApp</span>

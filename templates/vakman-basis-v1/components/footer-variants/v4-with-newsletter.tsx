@@ -1,5 +1,6 @@
 import type { FooterProps } from './types'
 import { telHref, mailHref, softTint } from './types'
+import LegalLinks from './legal-links'
 
 export default function FooterV4WithNewsletter(p: FooterProps) {
   const year = new Date().getFullYear()
@@ -85,7 +86,11 @@ export default function FooterV4WithNewsletter(p: FooterProps) {
       </div>
       <div className="border-t border-neutral-200 py-4 px-6 md:px-12">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-xs text-neutral-500">
-          <span>© {year} {p.businessName}</span>
+          <span className="inline-flex items-center gap-2">
+            © {year} {p.businessName}
+            <span aria-hidden className="text-neutral-300">·</span>
+            <LegalLinks tone="light" />
+          </span>
           <span>
             Site door <span style={{ color: p.primaryColor }} className="font-semibold">ALBS</span>
           </span>

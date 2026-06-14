@@ -18,6 +18,7 @@
  *   node scripts/realrun-v2.mjs [niche=loodgieter] [stad=Utrecht]
  */
 
+import './lib/load-env.mjs' // .env.local/.env → process.env (vóór alles dat env leest)
 import { mkdir, writeFile, readFile, cp } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -25,10 +26,12 @@ import { scrapeMapsList, scrapeMapsDetail } from './lib/scrape-maps.mjs'
 import { scrapeWebsite, downloadAndCheckLogo } from './lib/scrape-website.mjs'
 import { lookupKvk } from './lib/scrape-kvk.mjs'
 import { extractColorsFromLogo, nicheDefaultColors } from './lib/extract-color.mjs'
+import { ensureReadableOnWhite } from './lib/contrast.mjs'
 import { verifyLead, verifyPhoneNL } from './lib/verify.mjs'
 import { auditSite } from './lib/audit-lighthouse.mjs'
 import { renderTemplate } from './lib/render-template.mjs'
 import { buildSite, deployVercel } from './lib/deploy-vercel.mjs'
+import { runSiteGate } from './lib/site-gate.mjs'
 import { anonymizeAuthor, initialsAvatar } from './lib/anonymize.mjs'
 import { appendLegalLog } from './lib/legal-log.mjs'
 import { scoreSite, bucketFromScore } from './lib/score-site.mjs'
@@ -248,6 +251,14 @@ async function main() {
       note: `niche-default for ${NICHE}`,
     })
   }
+  // 4b. Contrast-guard: de meeste secties hebben een lichte achtergrond. Een te
+  // lichte primaryColor (felgeel, lichtgroen) als tekst/accent op wit is dan
+  // onleesbaar. Donker de kleur precies genoeg om WCAG 4.5:1 te halen, tint blijft.
+  const contrastFix = ensureReadableOnWhite(colors.primary, 4.5)
+  if (contrastFix.adjusted) {
+    log('step4b.contrast-guard', { from: colors.primary, to: contrastFix.color, ratio: Number(contrastFix.ratio.toFixed(2)) })
+    colors = { ...colors, primary: contrastFix.color, primaryOriginal: colors.primary }
+  }
   log('step4.colors', { colors, logoTrust, validation: logoValidation })
 
   // 5. Verify (deterministisch)
@@ -284,14 +295,16 @@ async function main() {
     .map((r) => ({
       author: anonymizeAuthor(r.authorRaw),
       initials: initialsAvatar(r.authorRaw),
-      photoUrl: r.photoUrl ?? undefined,
+      // AVG: photoUrl bewust NIET doorgeven — reviewer-foto's nooit publiceren
       text: r.text,
       rating: r.rating ?? 5,
       date: r.date ?? '',
     }))
     .slice(0, 6)
 
-  const cleanName = mapsDetail.title.replace(/[🔧🛠️⭐]/gu, '').trim()
+  // Strip alle emoji/pictogrammen uit de bedrijfsnaam (Maps-titels bevatten soms
+  // 🔧⭐ e.d.); \p{Extended_Pictographic} dekt de hele Unicode-emojiset, niet een lijstje.
+  const cleanName = mapsDetail.title.replace(/\p{Extended_Pictographic}/gu, '').replace(/\s+/g, ' ').trim()
   // Tagline: cleanen + cap op max 60 chars / 8 woorden (knip op woord-grens)
   function capTagline(raw) {
     if (!raw) return null
@@ -323,6 +336,7 @@ async function main() {
     BUSINESS_CITY: mapsDetail.city || STAD,
     BUSINESS_POSTCODE: mapsDetail.postcode || '',
     BUSINESS_KVK: kvkNumber ?? '',
+    BUSINESS_BTW: websiteData?.btw ?? '',
     PRIMARY_COLOR: colors.primary,
     ACCENT_COLOR: colors.accent,
     SERVICES_B64: Buffer.from(JSON.stringify(services.map((s) => s.replace(/\s+/g, ' ').trim()).filter((s) => s && s.length < 80))).toString('base64'),
@@ -349,6 +363,10 @@ async function main() {
     FOOTER_VARIANT: '1',
     NICHE: NICHE,
     CLARITY_PROJECT_ID: process.env.ALBS_CLARITY_PROJECT_ID ?? '',
+    // 'preview' = verkoopdemo (noindex, geen tracking/banner) · 'live' = klant-site
+    SITE_MODE: process.env.ALBS_SITE_MODE === 'live' ? 'live' : 'preview',
+    // Leeg = template valt terug op VERCEL_URL (build-time). Bij live: eigen klant-domein.
+    SITE_URL: process.env.ALBS_SITE_URL ?? '',
   }
 
   // 6b. Smart-render template-keuze (Claude beargumenteert)
@@ -395,11 +413,56 @@ async function main() {
   await renderTemplate({ templateDir: TEMPLATE, dstDir: siteDir, placeholders, siteName })
   log('step7.rendered', { siteDir, siteName })
 
-  // 8. Build + Deploy (per-klant Vercel-project)
+  // 8. Build + QA-gate + Deploy (per-klant Vercel-project)
   buildSite(siteDir)
-  const { url } = await deployVercel(siteDir, siteName)
-  await writeJson('deploy.json', { url, siteName })
-  log('step8.deployed', { url, projectName: siteName })
+
+  // 8a. Compliance/kwaliteit-poort: een site die het skelet-contract niet haalt,
+  // gaat NIET live. Dit voorkomt structureel wat eerder misging (footer-loos, leaks).
+  const gate = await runSiteGate({
+    siteDir,
+    siteMode: placeholders.SITE_MODE,
+    reportPath: path.join(RUN_DIR, 'gate-report.json'),
+  })
+  log('step8a.gate', { pass: gate.pass, failures: gate.failures.length, warnings: gate.warnings.length })
+
+  if (!gate.pass) {
+    log('step8a.gate-blocked', { failures: gate.failures })
+    await writeJson('deploy.json', { url: null, siteName, gated: true, failures: gate.failures })
+    const summary = {
+      runDir: RUN_DIR,
+      // skipped=true zodat run-batch dit als niet-ok telt en de maps-URL niet opnieuw scrapet.
+      skipped: true,
+      reason: 'qa-gate-failed',
+      bucket,
+      gated: true,
+      gateFailures: gate.failures,
+      lead: {
+        name: placeholders.BUSINESS_NAME,
+        phone: placeholders.BUSINESS_PHONE,
+        email: placeholders.BUSINESS_EMAIL || null,
+        kvk: placeholders.BUSINESS_KVK || null,
+        mapsUrl: mapsDetail.mapsUrl,
+      },
+      previewUrl: null,
+    }
+    await writeJson('summary.json', summary)
+    console.error(`\n⛔ QA-gate FAILED — niet gedeployed. ${gate.failures.length} blocker(s):`)
+    for (const f of gate.failures) console.error(`   · ${f}`)
+    console.error(`   Rapport: ${path.join(RUN_DIR, 'gate-report.json')}`)
+    process.exitCode = 2
+    return
+  }
+
+  // ALBS_SKIP_DEPLOY=1: scrape→render→build→gate zonder Vercel-deploy (smoke/CI/verify-install).
+  let url = null
+  if (process.env.ALBS_SKIP_DEPLOY === '1') {
+    await writeJson('deploy.json', { url: null, siteName, skippedDeploy: true, gateWarnings: gate.warnings })
+    log('step8.deploy-skipped', { siteName, reason: 'ALBS_SKIP_DEPLOY=1' })
+  } else {
+    ;({ url } = await deployVercel(siteDir, siteName))
+    await writeJson('deploy.json', { url, siteName, gateWarnings: gate.warnings })
+    log('step8.deployed', { url, projectName: siteName })
+  }
 
   // 9. Bellijst
   const csv = [

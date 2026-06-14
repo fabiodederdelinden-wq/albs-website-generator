@@ -8,6 +8,7 @@ export interface Review {
 }
 
 export interface ReviewsProps {
+  businessName?: string
   reviews: Review[]
   reviewCount: number
   reviewRating: number

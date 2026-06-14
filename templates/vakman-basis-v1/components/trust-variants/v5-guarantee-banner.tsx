@@ -2,6 +2,9 @@ import { formatKvk, type TrustProps } from './types'
 
 export default function TrustV5GuaranteeBanner(p: TrustProps) {
   const warranty = p.warrantyYears ?? 5
+  const metaLine = [formatKvk(p.kvk), `${p.reviewRating.toFixed(1)}★ op ${p.reviewCount} Google reviews`]
+    .filter(Boolean)
+    .join(' · ')
 
   const items: Array<{ icon: React.ReactNode; title: string; body: string }> = [
     {
@@ -72,7 +75,7 @@ export default function TrustV5GuaranteeBanner(p: TrustProps) {
             {warranty} jaar garantie · vaste prijs · binnen 2u ter plekke
           </h2>
           <p className="mt-3 text-base opacity-90 max-w-2xl mx-auto">
-            {formatKvk(p.kvk)} · {p.reviewRating.toFixed(1)}★ op {p.reviewCount} Google reviews
+            {metaLine}
           </p>
         </div>
 

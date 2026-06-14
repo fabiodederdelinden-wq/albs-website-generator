@@ -1,31 +1,233 @@
 {
   "version": "v4",
-  "lastUpdated": "2026-05-17",
+  "lastUpdated": "2026-06-14",
   "hero": {
     "approved": [
-      { "id": 1, "name": "aurora-flow", "label": "Aurora Flow" },
-      { "id": 2, "name": "radial-pulse", "label": "Radial Pulse" },
-      { "id": 3, "name": "particle-drift", "label": "Particle Drift" },
-      { "id": 4, "name": "wave-sea", "label": "Wave Sea" },
-      { "id": 5, "name": "grid-morph", "label": "3D Grid Morph" },
-      { "id": 6, "name": "blob-morph", "label": "Blob Morph" },
-      { "id": 7, "name": "liquid-mesh", "label": "Liquid Mesh Light" },
-      { "id": 8, "name": "iso-floating", "label": "Iso Floating Tools (niche-aware)" },
-      { "id": 9, "name": "aurora-cycle", "label": "Aurora Cycle" },
-      { "id": 10, "name": "diagonal-streaks", "label": "Diagonal Streaks" }
+      {
+        "id": 1,
+        "name": "aurora-flow",
+        "label": "Aurora Flow"
+      },
+      {
+        "id": 2,
+        "name": "radial-pulse",
+        "label": "Radial Pulse"
+      },
+      {
+        "id": 3,
+        "name": "particle-drift",
+        "label": "Particle Drift"
+      },
+      {
+        "id": 4,
+        "name": "wave-sea",
+        "label": "Wave Sea"
+      },
+      {
+        "id": 5,
+        "name": "grid-morph",
+        "label": "3D Grid Morph"
+      },
+      {
+        "id": 6,
+        "name": "blob-morph",
+        "label": "Blob Morph"
+      },
+      {
+        "id": 7,
+        "name": "liquid-mesh",
+        "label": "Liquid Mesh Light"
+      },
+      {
+        "id": 8,
+        "name": "iso-floating",
+        "label": "Iso Floating Tools (niche-aware)"
+      },
+      {
+        "id": 9,
+        "name": "aurora-cycle",
+        "label": "Aurora Cycle"
+      },
+      {
+        "id": 10,
+        "name": "diagonal-streaks",
+        "label": "Diagonal Streaks"
+      }
     ],
     "note": "Bron in apps/templates-showcase/app/hero — wijzig deze lijst om subset te selecteren"
   },
   "intro": {
-    "approved": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    "approved": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
   },
   "reviews": {
-    "approved": [1, 2, 3]
+    "approved": [
+      1,
+      2,
+      3
+    ]
   },
   "owner": {
-    "approved": [1, 2, 3]
+    "approved": [
+      1,
+      2,
+      3
+    ]
   },
   "layout": {
-    "approved": ["A", "B", "C", "D"]
+    "approved": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ]
+  },
+  "sectionBackgrounds": {
+    "header": {
+      "dark": [],
+      "tinted": [
+        3
+      ],
+      "light": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    "services": {
+      "dark": [],
+      "tinted": [],
+      "light": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    "projects": {
+      "dark": [
+        7,
+        8
+      ],
+      "tinted": [],
+      "light": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        9,
+        10
+      ]
+    },
+    "reviews": {
+      "dark": [
+        4
+      ],
+      "tinted": [],
+      "light": [
+        1,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    "trust": {
+      "dark": [],
+      "tinted": [
+        2,
+        7
+      ],
+      "light": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        8,
+        9,
+        10
+      ]
+    },
+    "owner": {
+      "dark": [
+        9
+      ],
+      "tinted": [
+        2
+      ],
+      "light": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10
+      ]
+    },
+    "contact": {
+      "dark": [],
+      "tinted": [],
+      "light": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    "footer": {
+      "dark": [
+        2,
+        5,
+        6
+      ],
+      "tinted": [
+        7
+      ],
+      "light": [
+        1,
+        3,
+        4,
+        8,
+        9,
+        10
+      ]
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { StarsRating, formatKvk, type TrustProps } from './types'
 
 export default function TrustV6SideBySide(p: TrustProps) {
+  const kvkLabel = formatKvk(p.kvk)
   const years = p.yearsActive ?? 18
   const clients = p.clientsCount ?? 1200
   const warranty = p.warrantyYears ?? 5
@@ -41,7 +42,7 @@ export default function TrustV6SideBySide(p: TrustProps) {
               <StarsRating rating={p.reviewRating} color={p.primaryColor} size={28} />
             </div>
             <p className="mt-5 text-sm text-[var(--color-ink-600)]">
-              <strong className="font-display font-bold text-[var(--color-ink-900)]">{p.reviewCount}</strong> reviews op Google · {formatKvk(p.kvk)}
+              <strong className="font-display font-bold text-[var(--color-ink-900)]">{p.reviewCount}</strong> reviews op Google{kvkLabel ? ` · ${kvkLabel}` : ''}
             </p>
           </div>
 

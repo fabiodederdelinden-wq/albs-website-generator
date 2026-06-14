@@ -9,6 +9,7 @@
  *   node scripts/run-batch.mjs [count=10] [niche=loodgieter] [stad=Utrecht]
  */
 
+import './lib/load-env.mjs' // .env.local/.env → process.env (vóór alles dat env leest)
 import { spawnSync } from 'node:child_process'
 import { mkdir, writeFile, readFile } from 'node:fs/promises'
 import path from 'node:path'
@@ -71,7 +72,11 @@ const ok = results.filter((r) => r.ok)
 const failed = results.filter((r) => !r.ok)
 
 // Bellijst-CSV (alleen succesvolle)
+// PII: bevat telefoon/e-mail/bedrijfsdata. Niet committen (runs/ staat in .gitignore),
+// niet delen buiten ALBS, verwijderen zodra de bellijst is afgewerkt.
+const csvField = (v) => `"${String(v ?? '').replace(/[\r\n\t]+/g, ' ').replace(/"/g, '""')}"`
 const csv = [
+  '# PII — telefoon/e-mail. Niet delen, verwijderen na gebruik.',
   'i,bedrijf,telefoon,email,kvk,bucket,preview_url,maps_url,verbeterscore',
   ...ok.map((r) =>
     [
@@ -85,7 +90,7 @@ const csv = [
       r.lead?.mapsUrl ?? '',
       r.audit?.verbeteringScore ?? '',
     ]
-      .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+      .map(csvField)
       .join(','),
   ),
 ].join('\n')
