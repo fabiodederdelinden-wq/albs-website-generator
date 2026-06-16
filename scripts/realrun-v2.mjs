@@ -22,7 +22,7 @@ import './lib/load-env.mjs' // .env.local/.env → process.env (vóór alles dat
 import { mkdir, writeFile, readFile, cp } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { scrapeMapsList, scrapeMapsDetail } from './lib/scrape-maps.mjs'
+import { searchLeads, fetchLeadDetail, activeProviderName } from './lib/providers/leaddata/index.mjs'
 import { scrapeWebsite, downloadAndCheckLogo } from './lib/scrape-website.mjs'
 import { lookupKvk } from './lib/scrape-kvk.mjs'
 import { extractColorsFromLogo, nicheDefaultColors } from './lib/extract-color.mjs'
@@ -33,6 +33,8 @@ import { renderTemplate } from './lib/render-template.mjs'
 import { buildSite, deployVercel } from './lib/deploy-vercel.mjs'
 import { runSiteGate } from './lib/site-gate.mjs'
 import { anonymizeAuthor, initialsAvatar } from './lib/anonymize.mjs'
+import { generateReviews, reviewsAggregate } from './lib/generate-reviews.mjs'
+import { assessLead } from './lib/lead-completeness.mjs'
 import { appendLegalLog } from './lib/legal-log.mjs'
 import { scoreSite, bucketFromScore } from './lib/score-site.mjs'
 import { pickSmartTemplate } from './lib/smart-template-pick.mjs'
@@ -134,9 +136,10 @@ async function main() {
   await mkdir(RUN_DIR, { recursive: true })
   log('run.start', { runDir: RUN_DIR, niche: NICHE, stad: STAD })
 
-  // 1. Maps-lijst → kies eerste met telefoon
-  const cards = await scrapeMapsList(NICHE, STAD, 15)
-  log('step1.list', { count: cards.length })
+  // 1. Lead-lijst via actieve provider (Places API als key aanwezig, anders Maps-scrape)
+  const leadProvider = activeProviderName()
+  const cards = await searchLeads(NICHE, STAD, 15)
+  log('step1.list', { count: cards.length, provider: leadProvider })
   await appendLegalLog({
     runId: path.basename(RUN_DIR),
     source: 'google-maps',
@@ -151,8 +154,8 @@ async function main() {
   let chosenCard = null
 
   for (const card of cards) {
-    if (SKIP_SET.has(card.href)) continue
-    const detail = await scrapeMapsDetail(card.href)
+    if (SKIP_SET.has(card.ref)) continue
+    const detail = await fetchLeadDetail(card.ref)
     if (!detail.title || !detail.phoneRaw) continue
 
     // Score & decide bucket
@@ -305,6 +308,21 @@ async function main() {
   // Strip alle emoji/pictogrammen uit de bedrijfsnaam (Maps-titels bevatten soms
   // 🔧⭐ e.d.); \p{Extended_Pictographic} dekt de hele Unicode-emojiset, niet een lijstje.
   const cleanName = mapsDetail.title.replace(/\p{Extended_Pictographic}/gu, '').replace(/\s+/g, ' ').trim()
+
+  // Reviews-fallback (productiebeleid): echte reviews hebben voorrang. Heeft
+  // het bedrijf er écht 0 én staat genereren aan (eigenaar kan opt-outen via
+  // ALBS_GENERATE_REVIEWS=0), dan vullen we met realistische menselijke reviews.
+  const generateReviewsOn = process.env.ALBS_GENERATE_REVIEWS !== '0'
+  let reviewsAreGenerated = false
+  let reviewWireFinal = reviewWire
+  if (reviewWire.length === 0 && generateReviewsOn) {
+    reviewWireFinal = generateReviews({ businessName: cleanName, niche: NICHE, city: mapsDetail.city || STAD }).map(
+      (r) => ({ author: r.author, initials: initialsAvatar(r.author), text: r.text, rating: r.rating, date: r.relativeTime, generated: true }),
+    )
+    reviewsAreGenerated = true
+    log('step5b.reviews-generated', { count: reviewWireFinal.length })
+  }
+  const reviewsAgg = reviewsAreGenerated ? reviewsAggregate(reviewWireFinal) : null
   // Tagline: cleanen + cap op max 60 chars / 8 woorden (knip op woord-grens)
   function capTagline(raw) {
     if (!raw) return null
@@ -340,10 +358,10 @@ async function main() {
     PRIMARY_COLOR: colors.primary,
     ACCENT_COLOR: colors.accent,
     SERVICES_B64: Buffer.from(JSON.stringify(services.map((s) => s.replace(/\s+/g, ' ').trim()).filter((s) => s && s.length < 80))).toString('base64'),
-    REVIEW_COUNT: String(mapsDetail.reviewsCount ?? 0),
-    REVIEW_RATING: String(mapsDetail.reviewsRating ?? 0),
+    REVIEW_COUNT: String(reviewsAgg ? reviewsAgg.count : mapsDetail.reviewsCount ?? 0),
+    REVIEW_RATING: String(reviewsAgg ? reviewsAgg.rating : mapsDetail.reviewsRating ?? 0),
     DEKKING_REGIO: mapsDetail.city || STAD,
-    REVIEWS_JSON: Buffer.from(JSON.stringify(reviewWire)).toString('base64'),
+    REVIEWS_JSON: Buffer.from(JSON.stringify(reviewWireFinal)).toString('base64'),
     PROJECTS_JSON: Buffer.from(JSON.stringify(projects)).toString('base64'),
     REVIEWS_SOURCE_URL: mapsDetail.mapsUrl,
     HAS_EMAIL: String(!!websiteData?.businessEmail),
@@ -407,6 +425,27 @@ async function main() {
   log('step6c.score', scoring)
 
   await writeJson('placeholders.json', placeholders)
+
+  // Lead-data-completeness: leg expliciet vast welk veld echt gescrapet is en welk
+  // ontbreekt (geen stille gaten). Echte review-teksten tellen los van gegenereerde.
+  const leadAssessment = assessLead({
+    title: cleanName,
+    phone: placeholders.BUSINESS_PHONE,
+    email: placeholders.BUSINESS_EMAIL || null,
+    address: placeholders.BUSINESS_ADDRESS,
+    city: placeholders.BUSINESS_CITY,
+    kvk: placeholders.BUSINESS_KVK || null,
+    btw: placeholders.BUSINESS_BTW || null,
+    website: mapsDetail.websiteUrl || null,
+    rating: reviewsAreGenerated ? null : mapsDetail.reviewsRating,
+    reviewsCount: reviewsAreGenerated ? null : mapsDetail.reviewsCount,
+    reviewSnippets: reviewWire, // alleen ECHTE reviews tellen hier
+    category: mapsDetail.category,
+    logo: placeholders.OWNER_PHOTO_URL ? null : null,
+    fieldSources: { ...(mapsDetail.fieldSources ?? {}), email: websiteData?.businessEmail ? 'website-scrape' : null, kvk: kvkNumber ? 'kvk-lookup' : null, btw: websiteData?.btw ? 'website-scrape' : null },
+  })
+  await writeJson('lead-data-report.json', { ...leadAssessment, reviewsGenerated: reviewsAreGenerated })
+  log('step6d.lead-completeness', { pass: leadAssessment.pass, missing: leadAssessment.missing.length, critical: leadAssessment.critical })
 
   const siteName = `albs-${placeholders.BUSINESS_NAME.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 50)}`
   const siteDir = path.join(RUN_DIR, 'site')
@@ -493,9 +532,11 @@ async function main() {
       email: placeholders.BUSINESS_EMAIL || null,
       kvk: placeholders.BUSINESS_KVK || null,
       mapsUrl: mapsDetail.mapsUrl,
-      reviewsCount: mapsDetail.reviewsCount,
-      reviewsRating: mapsDetail.reviewsRating,
-      reviewSnippets: reviewWire.length,
+      reviewsCount: reviewsAgg ? reviewsAgg.count : mapsDetail.reviewsCount,
+      reviewsRating: reviewsAgg ? reviewsAgg.rating : mapsDetail.reviewsRating,
+      reviewSnippets: reviewWireFinal.length,
+      reviewsGenerated: reviewsAreGenerated,
+      reviewsRealScraped: reviewWire.length,
     },
     colors,
     verify,

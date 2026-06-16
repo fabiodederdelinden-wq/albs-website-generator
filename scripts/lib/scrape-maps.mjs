@@ -78,16 +78,82 @@ export async function scrapeMapsDetail(detailUrl) {
 
     await page.waitForTimeout(3000)
 
+    // Structurele bron: Google embedt ALLE business-data als JSON in
+    // window.APP_INITIALIZATION_STATE. Veel stabieler dan UI-CSS-klassen, die
+    // Google zonder aankondiging roteert (dat brak eerder de review-count).
+    // We gebruiken het als kruiscontrole/fallback naast aria-labels.
+    let stateRating = null
+    let stateCount = null
+    let statePhone = null
+    try {
+      const html = await page.content()
+      const m = html.match(/APP_INITIALIZATION_STATE\s*=\s*(\[[\s\S]*?\])\s*;\s*window\.APP_FLAGS/)
+      if (m) {
+        const jd = JSON.parse(m[1])
+        // Doorzoek de geneste structuur generiek: het data-blok bevat een sub-array
+        // waar [rating(float 0-5), count(int)] naast elkaar staan. Robuuster dan
+        // harde indices die ~jaarlijks schuiven.
+        const stack = [jd]
+        let best = null
+        while (stack.length && !best) {
+          const node = stack.pop()
+          if (!Array.isArray(node)) continue
+          for (let i = 0; i < node.length; i++) {
+            const v = node[i]
+            if (
+              typeof v === 'number' && v > 0 && v <= 5 && !Number.isInteger(v) &&
+              typeof node[i + 1] === 'number' && Number.isInteger(node[i + 1]) && node[i + 1] >= 0 && node[i + 1] < 1e7
+            ) {
+              best = { rating: v, count: node[i + 1] }
+              break
+            }
+            if (Array.isArray(v)) stack.push(v)
+          }
+        }
+        if (best) {
+          stateRating = best.rating
+          stateCount = best.count
+        }
+        // Telefoon: zoek NL-telefoonpatroon in de JSON-string (extra fallback).
+        const phoneM = m[1].match(/"(\+31[\s0-9]{7,}|0[\s0-9]{8,})"/)
+        if (phoneM) statePhone = phoneM[1]
+      }
+    } catch (e) {
+      if (process.env.ALBS_DEBUG) console.warn('[scrape-maps] APP_INITIALIZATION_STATE parse faalde:', e.message)
+    }
+
     const head = await page.evaluate(() => {
       const title = document.querySelector('h1')?.textContent?.trim() ?? null
       const websiteBtn = document.querySelector('a[data-item-id="authority"]')
       const phoneBtn = document.querySelector('button[data-item-id^="phone:tel:"]')
       const addressBtn = document.querySelector('button[data-item-id="address"]')
-      const ratingEl = document.querySelector('div.F7nice span[aria-hidden="true"]')
-      const ratingTxt = ratingEl?.textContent?.trim() ?? null
-      const reviewsCountEl = document.querySelector('div.F7nice span:nth-child(2)')
-      const reviewsCountTxt = reviewsCountEl?.textContent?.trim() ?? null
-      const categoryEl = document.querySelector('button.DkEaL')
+      const categoryEl = document.querySelector('button.DkEaL') || document.querySelector('[jsaction*="category"]')
+
+      // Rating + count via aria-label (taal-onafhankelijk, stabiel). Meerdere strategieën.
+      let ariaRating = null
+      let ariaCountRaw = null
+      // count: element met 'reviews|beoordelingen|recensies' in aria-label
+      const countEl = Array.from(document.querySelectorAll('[aria-label]')).find((e) =>
+        /\d[\d.\s]*\s*(reviews|beoordelingen|recensies)/i.test(e.getAttribute('aria-label') || ''),
+      )
+      if (countEl) ariaCountRaw = countEl.getAttribute('aria-label')
+      // rating: role=img met 'sterren/stars' of een numeriek aria-label 0-5
+      const ratingEl =
+        document.querySelector('[role="img"][aria-label*="ster" i]') ||
+        document.querySelector('[role="img"][aria-label*="star" i]')
+      if (ratingEl) {
+        const m = (ratingEl.getAttribute('aria-label') || '').match(/(\d[.,]\d)/)
+        if (m) ariaRating = parseFloat(m[1].replace(',', '.'))
+      }
+      // CSS-fallback (oud gedrag) — alleen als aria niets gaf
+      if (ariaRating == null) {
+        const t = document.querySelector('div.F7nice span[aria-hidden="true"]')?.textContent?.trim()
+        if (t) ariaRating = parseFloat(t.replace(',', '.'))
+      }
+      if (ariaCountRaw == null) {
+        ariaCountRaw = document.querySelector('div.F7nice span:nth-child(2)')?.textContent?.trim() ?? null
+      }
+
       return {
         title,
         websiteUrl: websiteBtn?.getAttribute('href') ?? null,
@@ -95,8 +161,8 @@ export async function scrapeMapsDetail(detailUrl) {
         phoneRaw: phoneBtn?.getAttribute('aria-label')?.replace(/^Phone:\s*|^Telefoon:\s*/i, '') ?? null,
         addressRaw:
           addressBtn?.getAttribute('aria-label')?.replace(/^Address:\s*|^Adres:\s*/i, '') ?? null,
-        reviewsRating: ratingTxt ? parseFloat(ratingTxt.replace(',', '.')) : null,
-        reviewsCountRaw: reviewsCountTxt,
+        ariaRating,
+        ariaCountRaw,
         category: categoryEl?.textContent?.trim() ?? null,
       }
     })
@@ -199,16 +265,47 @@ export async function scrapeMapsDetail(detailUrl) {
       city = cityLine.replace(NL_POSTCODE_RE, '').trim()
     }
 
-    // Parse reviewsCount uit string "(123)"
+    // Review-count: aria-label primair (taal-onafhankelijk), JSON-state als fallback.
     let reviewsCount = null
-    if (head.reviewsCountRaw) {
-      const m = head.reviewsCountRaw.match(/(\d[\d.,]*)/)
-      if (m) reviewsCount = parseInt(m[1].replace(/[^\d]/g, ''), 10)
+    let countSource = null
+    if (head.ariaCountRaw) {
+      const m = head.ariaCountRaw.match(/(\d[\d.,\s]*)/)
+      if (m) {
+        reviewsCount = parseInt(m[1].replace(/[^\d]/g, ''), 10)
+        countSource = 'aria-label'
+      }
+    }
+    if ((reviewsCount == null || Number.isNaN(reviewsCount)) && stateCount != null) {
+      reviewsCount = stateCount
+      countSource = 'app-state-json'
+    }
+
+    // Rating: aria/CSS primair, JSON-state als fallback.
+    let reviewsRating = head.ariaRating ?? null
+    let ratingSource = head.ariaRating != null ? 'aria-label' : null
+    if (reviewsRating == null && stateRating != null) {
+      reviewsRating = stateRating
+      ratingSource = 'app-state-json'
+    }
+
+    // Telefoon: DOM-knop primair, JSON-state als fallback.
+    const phoneRaw = head.phoneRaw ?? statePhone ?? null
+
+    // Per-veld herkomst: maakt zichtbaar wat echt gescrapet is vs ontbreekt (geen stille gaten).
+    const fieldSources = {
+      title: head.title ? 'dom-h1' : null,
+      phone: head.phoneRaw ? 'dom-button' : statePhone ? 'app-state-json' : null,
+      address: head.addressRaw ? 'dom-button' : null,
+      website: head.websiteUrl ? 'dom-button' : null,
+      rating: ratingSource,
+      reviewsCount: countSource,
+      reviewSnippets: reviewSnippets.length ? 'dom-reviews-tab' : null,
+      category: head.category ? 'dom' : null,
     }
 
     return {
       title: head.title,
-      phoneRaw: head.phoneRaw,
+      phoneRaw,
       address: street,
       postcode,
       city,
@@ -216,9 +313,10 @@ export async function scrapeMapsDetail(detailUrl) {
       hasWebsite: head.hasWebsite,
       websiteUrl: head.websiteUrl,
       reviewsCount,
-      reviewsRating: head.reviewsRating,
+      reviewsRating,
       reviewSnippets,
       category: head.category,
+      fieldSources,
     }
   } finally {
     // finally: browser-proces mag nooit lekken, ook niet bij crash mid-scrape

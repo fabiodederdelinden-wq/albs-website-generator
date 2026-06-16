@@ -56,7 +56,34 @@ cp .env.example .env.local
 
 Werk je met een Vercel-team? Zet dan ook `VERCEL_TEAM_ID` en `VERCEL_SCOPE` in `.env.local`.
 
-## 5. (Optioneel) AI Gateway
+## 5. (Optioneel) API-keys voor betere data
+
+Alles werkt zonder keys. Deze twee maken de output beter.
+
+### 5a. Lead-data bron: Google Places API
+
+De generator kiest de bron automatisch:
+
+- **Geen key** → gratis Google Maps-scraping. Naam, adres, telefoon en rating zijn
+  betrouwbaar; review-aantal en review-teksten haalt Google niet altijd op (die
+  worden wisselend gerenderd).
+- **Met key** → Google Places API (New) levert rating, review-aantal én reviews
+  gegarandeerd. Aanbevolen voor 100% complete lead-data.
+
+```bash
+# in .env.local
+GOOGLE_PLACES_API_KEY=je_places_api_key
+# optioneel forceren: ALBS_LEADDATA_PROVIDER=places-api | maps-scrape
+```
+
+Maak een key in de Google Cloud Console: zet **Places API (New)** aan en koppel
+facturatie (ruim binnen de gratis maandtegoeden voor normale volumes).
+
+Heeft een bedrijf écht 0 reviews, dan vult de generator realistische
+voorbeeld-reviews (duidelijk gemarkeerd, eigenaar kan ze uitzetten). Per run
+uitschakelen: `ALBS_GENERATE_REVIEWS=0` in `.env.local`.
+
+### 5b. AI Gateway
 
 Zonder AI-key werkt alles, maar template-keuze is dan willekeurig en logo's
 worden niet gevalideerd. Voor slimme keuze + logo-check:
@@ -74,6 +101,9 @@ node scripts/realrun-v2.mjs loodgieter Utrecht
 
 Dit scraped één loodgieter in Utrecht, bouwt de site en zet hem live.
 Aan het eind zie je de preview-URL + een `runs/<datum>/bellijst.csv`.
+Met een `GOOGLE_PLACES_API_KEY` loopt de scrape via de Places API; zonder key via
+gratis Maps-scraping. Een `lead-data-report.json` per run laat per veld zien
+welke bron de waarde leverde, zodat er geen stille gaten zijn.
 
 Beschikbare niches: loodgieter, schilder, hovenier, aannemer, installateur,
 elektricien, dakdekker, stukadoor, slotenmaker.

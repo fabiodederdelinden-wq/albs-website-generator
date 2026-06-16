@@ -1,5 +1,42 @@
 # Changelog
 
+## v1.2.0 — 100% echte lead-data (2026-06-16)
+
+Lead-data wordt nu zo betrouwbaar mogelijk opgehaald, met een nette uitwijk als een
+bron iets niet geeft. Geen verzonnen cijfers, geen stille gaten.
+
+### Lead-data bron-abstractie
+- Nieuwe provider-laag `scripts/lib/providers/leaddata/`: één contract, twee adapters.
+- **Google Places API (New)**-adapter: levert rating, review-aantal én review-teksten
+  gegarandeerd. Schakelt automatisch in zodra `GOOGLE_PLACES_API_KEY` is gezet.
+- **Maps-scrape**-adapter (gratis, geen key): rating + NAP betrouwbaar via aria-label en
+  `APP_INITIALIZATION_STATE`; review-aantal kan ontbreken omdat Google dat wisselend toont.
+- De registry kiest de bron automatisch (key aanwezig → Places API, anders scrape);
+  forceren kan met `ALBS_LEADDATA_PROVIDER=places-api|maps-scrape`.
+
+### Robuustere scraper
+- Maps-scraper gehard tegen wisselende CSS: rating via aria-label, review-aantal via
+  meerdere strategieën (aria-label, `APP_INITIALIZATION_STATE`, CSS-vangnet).
+- Per veld wordt de bron vastgelegd (`fieldSources`) — zichtbaar in het run-rapport.
+
+### Reviews-fallback (compliant)
+- Heeft een bedrijf écht 0 reviews, dan worden realistische voorbeeld-reviews gegenereerd:
+  seeded per bedrijf (stabiel), niche-bewust, AVG-vorm (voornaam + initiaal), en intern
+  gemarkeerd als `generated: true`. Echte reviews hebben altijd voorrang.
+- Per run uit te zetten met `ALBS_GENERATE_REVIEWS=0`.
+
+### Volledigheid + transparantie
+- `lead-completeness.mjs` valideert per lead of de kernvelden (naam + contactweg) er zijn
+  en rapporteert de status expliciet — geen lead gaat ongemerkt incompleet door.
+- `lead-data-report.json` per run toont per veld de waarde én de bron.
+
+### Deploy
+- Vercel-deploy honoreert nu `VERCEL_TOKEN` uit de env (servers/CI), met `vercel login`
+  als fallback — zoals INSTALL.md al beschreef. Foutmelding noemt beide opties.
+
+### Tests
+- Nieuwe suites: `generate-reviews`, `lead-completeness`, `places-api` (adapter).
+
 ## v1.1.0 — Release-audit (2026-06-14)
 
 Volledige doorlichting vóór distributie. Wettelijke compliance, robuustheid en een

@@ -49,7 +49,14 @@ if grep -rqE "/home/fabio|team_K6|fabio-de-derde-linden" scripts/ 2>/dev/null; t
   bad "hardcoded persoonlijk pad/team in scripts/"
 else ok "geen hardcoded persoonlijke paden"; fi
 
-# 10. Gate-smoke: render+build+gate met lege optionals (vangt empty-BTW/review-loze edge-cases)
+# 10. Lead-data provider-abstractie aanwezig
+if [ -f "scripts/lib/providers/leaddata/base.mjs" ] && [ -f "scripts/lib/providers/leaddata/index.mjs" ] && [ -f "scripts/lib/providers/leaddata/places-api.mjs" ] && [ -f "scripts/lib/providers/leaddata/maps-scrape.mjs" ]; then
+  ok "lead-data providers aanwezig (contract + maps-scrape + places-api)"
+else
+  bad "lead-data provider-abstractie ontbreekt in scripts/lib/providers/leaddata/"
+fi
+
+# 11. Gate-smoke: render+build+gate met lege optionals (vangt empty-BTW/review-loze edge-cases)
 if [ -d "templates/vakman-basis-v1/node_modules" ]; then
   if node scripts/smoke-render.mjs >/tmp/albs-smoke.log 2>&1; then
     ok "gate-smoke groen (lege BTW/e-mail/reviews bouwen + passeren de QA-gate)"

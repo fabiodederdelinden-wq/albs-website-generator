@@ -1,6 +1,6 @@
 /**
  * AVG-veilige anonimisering van reviewer-namen.
- * "Jan Bovelander" → "Jan B."
+ * "Jan Jansen" → "Jan J."
  * "M. de Vries" → "M. de V."
  * Lege/local-guides-only: "Anonieme reviewer"
  */

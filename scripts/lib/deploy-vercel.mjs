@@ -2,7 +2,7 @@
  * Build + Vercel deploy van gerenderde site-folder.
  * Per klant een eigen Vercel-project zodat protection-settings + analytics gescheiden zijn.
  *
- * Token bron: ~/.local/share/com.vercel.cli/auth.json (Vercel CLI login)
+ * Token-bron: env VERCEL_TOKEN (servers/CI) of anders ~/.local/share/com.vercel.cli/auth.json (`vercel login`).
  */
 
 import { execSync } from 'node:child_process'
@@ -37,6 +37,8 @@ function teamQuery(teamId) {
 }
 
 async function getVercelToken() {
+  // Env-token wint (handig voor servers/CI). Anders de Vercel CLI-login.
+  if (process.env.VERCEL_TOKEN) return process.env.VERCEL_TOKEN
   try {
     const authPath = path.join(homedir(), '.local/share/com.vercel.cli/auth.json')
     const raw = await readFile(authPath, 'utf8')
@@ -62,7 +64,7 @@ export function buildSite(siteDir) {
 export async function ensureVercelProject(projectName, team = resolveVercelTeam()) {
   const { teamId: TEAM_ID } = team
   const token = await getVercelToken()
-  if (!token) throw new Error('Vercel token niet gevonden in ~/.local/share/com.vercel.cli/auth.json')
+  if (!token) throw new Error('Vercel-token niet gevonden. Zet VERCEL_TOKEN in .env.local of voer `vercel login` uit.')
 
   // 1) Probeer create
   const createRes = await fetch(`https://api.vercel.com/v9/projects${teamQuery(TEAM_ID)}`, {

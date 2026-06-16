@@ -8,7 +8,8 @@ bedrijfsdata en zet hem live op Vercel. Gebouwd voor lokale dienstverleners
 
 Per lead draait een pipeline van 8 stappen:
 
-1. **Scrape** — bedrijfsgegevens uit Google Maps (naam, telefoon, adres, reviews)
+1. **Scrape** — bedrijfsgegevens uit Google Maps (naam, telefoon, adres, reviews); met
+   een `GOOGLE_PLACES_API_KEY` loopt dit via de Places API voor gegarandeerde review-data
 2. **Score** — bestaande site beoordeeld op 9 factoren (snelheid, mobiel, SEO, ...)
 3. **KvK** — bedrijfsverificatie via de gratis openkvk-API
 4. **Kleuren** — primaire + accentkleur uit het logo (node-vibrant)
@@ -34,6 +35,7 @@ Zie **[INSTALL.md](./INSTALL.md)** voor de volledige installatie + vereisten.
 - Node.js 20+ · pnpm (of npm)
 - Next.js 15 + Tailwind v4 (template)
 - Playwright (Maps-scrape) · Lighthouse (audit) · node-vibrant (kleuren)
+- Google Places API (optioneel, voor gegarandeerde review-data)
 - Vercel CLI (deploy) · AI Gateway (optioneel, voor slimme template-keuze)
 
 ## Mappenstructuur
@@ -42,7 +44,8 @@ Zie **[INSTALL.md](./INSTALL.md)** voor de volledige installatie + vereisten.
 scripts/
   realrun-v2.mjs        Hoofd-pipeline (1 lead → live site)
   run-batch.mjs         Meerdere leads achter elkaar
-  lib/                  14 modules (scrape, score, render, deploy, ...)
+  lib/                  modules (scrape, score, render, deploy, ...)
+  lib/providers/        lead-data bron-abstractie (Maps-scrape + Places API)
 templates/
   vakman-basis-v1/      Next.js-template met 8 secties × 10 varianten
 ```
